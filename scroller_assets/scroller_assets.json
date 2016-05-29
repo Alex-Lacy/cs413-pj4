@@ -1,0 +1,21 @@
+{"frames": {
+
+"scroller_mid.png":
+{
+	"frame": {"x":0,"y":0,"w":720,"h":500},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":720,"h":500},
+	"sourceSize": {"w":720,"h":500},
+	"pivot": {"x":0.5,"y":0.5}
+}},
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "scroller_assets.png",
+	"format": "RGBA8888",
+	"size": {"w":720,"h":500},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:02b3d50af5bc79716d740a2ae5f7aad3:fa4edede08ccd30802ef50a608c740da:2855b2f3449f26b2ef118775ff5420ab$"
+}
+}
