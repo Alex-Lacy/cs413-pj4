@@ -4,7 +4,7 @@ var game_width = 720;
 var game_height = 500;
 var game_scale = 1;
 
-var objectsStart = 0;
+var objectsStart = 1;
 
 var gameport = document.getElementById("gameport");
 var renderer = new PIXI.autoDetectRenderer(game_width, game_height);
@@ -137,8 +137,9 @@ function changeView(view){
 }
 
 // As long as there is less then 3 objects generate a new set of object 
+// TODO: add other object groups
 function generateObstacles() {
-	if(objects => 3) {return;}
+	if(objects >= 3) {return;}
 	
 	// Create a new container for the object and add it to the game view
 	var container = new PIXI.Container();
@@ -159,21 +160,32 @@ function generateObstacles() {
 	}
 	container.anchor.x = 0.5;
 	container.anchor.y = 0.5;
-	game_view.addChildAt(container);
+	stage.children[2].addChildAt(container);
 	objects += 1;
 	
 }
 
 // Cycles through each obstacle and moves based on the amount given
 function moveObstacles(amount) {
-	for(i = objectsStart; i < game_view.children.length; i++) {
-		game_view.children[i].x -= amount;
-		if(game_view.children[i].x) {
-			// remove container from game view 
+	for(i = objectsStart; i < stage.children[2].children.length; i++) {
+		stage.children[2].children[i].x -= amount;
+		if(stage.children[2].children[i].x + 125 <= 0) {
+			// remove container from game view and destroy its children (ie the sprite)
+			var toDestroy = stage.children[2].removeChildAt(i);
+			toDestroy.destroy(true);
 		}
 	}
 }
 
+// Cycles through each object and checks for collison
+function checkCollison() {
+	var playerX = player.position.x;
+	var playerY = player.position.y;
+	for(i = objectsStart; i < stage.children[2].children.length; i++) {
+		// Check for collsion
+		// Collsion results?
+	}
+}
 
 function animate(){
 	requestAnimationFrame(animate);
