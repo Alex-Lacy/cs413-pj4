@@ -192,7 +192,9 @@ function checkCollison() {
 function animate(){
 	requestAnimationFrame(animate);
 
+
 	scroller.update();
+
 
 	renderer.render(stage);
 }
