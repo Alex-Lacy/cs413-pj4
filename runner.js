@@ -4,6 +4,7 @@ var game_width = 720;
 var game_height = 500;
 var game_scale = 1;
 
+var objectsStart = 0;
 
 var gameport = document.getElementById("gameport");
 var renderer = new PIXI.autoDetectRenderer(game_width, game_height);
@@ -135,7 +136,43 @@ function changeView(view){
 	
 }
 
+// As long as there is less then 3 objects generate a new set of object 
+function generateObstacles() {
+	if(objects => 3) {return;}
+	
+	// Create a new container for the object and add it to the game view
+	var container = new PIXI.Container();
+	
+	// Random type
+	var type = Math.floor(Math.random() * 2);
+	var trap;
+	if (type == 0) {
+		// Air traps
+		trap = new PIXI.Sprite(PIXI.Texture.fromFrame('obstacle_assets/laser_trap_air_1.png'));
+		container.addChild(trap);
+		container[0].y += 75; // Moves the trap into the air enough that you need to duck
+	}
+	else {
+		// Ground traps 
+		trap = new PIXI.Sprite(PIXI.Texture.fromFrame('obstacle_assets/spike_trap_floor_1.png'));
+		container.addChild(trap);
+	}
+	container.anchor.x = 0.5;
+	container.anchor.y = 0.5;
+	game_view.addChildAt(container);
+	objects += 1;
+	
+}
 
+// Cycles through each obstacle and moves based on the amount given
+function moveObstacles(amount) {
+	for(i = objectsStart; i < game_view.children.length; i++) {
+		game_view.children[i].x -= amount;
+		if(game_view.children[i].x) {
+			// remove container from game view 
+		}
+	}
+}
 
 
 function animate(){
