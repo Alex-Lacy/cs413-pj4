@@ -22,6 +22,11 @@ stage.addChild(title_view);
 var game_view = new PIXI.Container();
 stage.addChild(game_view);
 
+var scroller = new Scroller(game_view);
+
+var platforms = new PIXI.Container();
+game_view.addChild(platforms);
+
 game_view.visible = false;
 game_view.interactive = false;
 
@@ -33,7 +38,7 @@ title_view.interactive = true;
 var player = {};
 player.jumping = false;
 
-var scroller = new Scroller(game_view);
+
 
 PIXI.loader
 	.add('./menu_assets/menu_assets.json')
@@ -52,7 +57,7 @@ function loadMenus(){
 
 
 PIXI.loader
-	.add('./scroller_assets/scroller_assets.json')
+	.add('./scroller_assets/platform_assets/platform_assets.json')
 	.add('./entity_assets/entity_assets.json')
 	.load(loadGame);
 
@@ -67,8 +72,26 @@ function loadGame(){
 	player.anchor.x = .5;
 	player.anchor.y = 1;
 	player.position.x = 120;
-	player.position.y = 450;
+	player.position.y = 400;
 	player.on('')
+
+
+	var platform_texture = PIXI.Texture.fromFrame('mid0.png');
+	//var platform_array = [];
+	for(var k = 0; k <= game_width + 120; k += 120){
+
+		var platformk = new PIXI.Sprite(platform_texture);
+		platforms.addChild(platformk);
+		platformk.visible = true;
+		platformk.anchor.x = .5;
+		platformk.anchor.y = 1.0;
+		platformk.position.x = k;
+		platformk.position.y = 625;
+
+		//platform_array.push(platformk);
+	}
+
+
 
 
 
@@ -195,6 +218,14 @@ function animate(){
 
 	scroller.update();
 
+	for(var k = 0; k < platforms.children.length; k++){
+
+		platforms.children[k].position.x -= 4;
+
+		if (platforms.children[k].position.x == -120){
+			platforms.children[k].position.x = game_width + 120;
+		}
+	}
 
 	renderer.render(stage);
 }
