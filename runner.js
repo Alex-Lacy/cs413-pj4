@@ -4,6 +4,7 @@ var game_width = 720;
 var game_height = 500;
 var game_scale = 1;
 
+var objectsStart = 1;
 
 var gameport = document.getElementById("gameport");
 var renderer = new PIXI.autoDetectRenderer(game_width, game_height);
@@ -32,7 +33,7 @@ title_view.interactive = true;
 var player = {};
 player.jumping = false;
 
-
+var scroller = new Scroller(game_view);
 
 PIXI.loader
 	.add('./menu_assets/menu_assets.json')
@@ -58,9 +59,7 @@ PIXI.loader
 
 function loadGame(){
 
-	var scroller_mid = new PIXI.Sprite(PIXI.Texture.fromFrame('scroller_mid.png'));
-	game_view.addChild(scroller_mid);
-
+	
 
 	player = new PIXI.Sprite(PIXI.Texture.fromFrame('player.png'));
 	game_view.addChild(player);
@@ -135,14 +134,67 @@ function changeView(view){
 	
 }
 
+// As long as there is less then 3 objects generate a new set of object 
+// TODO: add other object groups
+function generateObstacles() {
+	if(objects >= 3) {return;}
+	
+	// Create a new container for the object and add it to the game view
+	var container = new PIXI.Container();
+	
+	// Random type
+	var type = Math.floor(Math.random() * 2);
+	var trap;
+	if (type == 0) {
+		// Air traps
+		trap = new PIXI.Sprite(PIXI.Texture.fromFrame('obstacle_assets/laser_trap_air_1.png'));
+		container.addChild(trap);
+		container[0].y += 75; // Moves the trap into the air enough that you need to duck
+	}
+	else {
+		// Ground traps 
+		trap = new PIXI.Sprite(PIXI.Texture.fromFrame('obstacle_assets/spike_trap_floor_1.png'));
+		container.addChild(trap);
+	}
+	container.anchor.x = 0.5;
+	container.anchor.y = 0.5;
+	stage.children[2].addChildAt(container);
+	objects += 1;
+	
+}
 
+// Cycles through each obstacle and moves based on the amount given
+function moveObstacles(amount) {
+	for(i = objectsStart; i < stage.children[2].children.length; i++) {
+		stage.children[2].children[i].x -= amount;
+		if(stage.children[2].children[i].x + 125 <= 0) {
+			// remove container from game view and destroy its children (ie the sprite)
+			var toDestroy = stage.children[2].removeChildAt(i);
+			toDestroy.destroy(true);
+		}
+	}
+}
 
+// Cycles through each object and checks for collison
+function checkCollison() {
+	var playerX = player.position.x;
+	var playerY = player.position.y;
+	for(i = objectsStart; i < stage.children[2].children.length; i++) {
+		if(stage.children[2].children[i].x <= playerX + 62.5 && stage.children[2].children[i].x >= playerX - 62.5) {
+			if(stage.children[2].children[i].y <= playerY + 62.5 && stage.children[2].children[i].y >= playerY - 62.5) {
+				// Collsion results?
+			}
+		}
+		
+	}
+}
 
 function animate(){
 	requestAnimationFrame(animate);
+
+	scroller.update();
+
 	renderer.render(stage);
-
-
 }
 
 animate();
