@@ -182,16 +182,18 @@ function checkCollison() {
 	var playerX = player.position.x;
 	var playerY = player.position.y;
 	for(i = objectsStart; i < stage.children[2].children.length; i++) {
-		// Check for collsion
-		// Collsion results?
+		if(stage.children[2].children[i].x <= playerX + 62.5 && stage.children[2].children[i].x >= playerX - 62.5) {
+			if(stage.children[2].children[i].y <= playerY + 62.5 && stage.children[2].children[i].y >= playerY - 62.5) {
+				// Collsion results?
+			}
+		}
+		
 	}
 }
 
 function animate(){
 	requestAnimationFrame(animate);
 	renderer.render(stage);
-
-
 }
 
 animate();
