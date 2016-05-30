@@ -3,10 +3,10 @@
 function Mid(){
 	var mid_texture = new PIXI.Texture.fromImage("scroller_mid.png");	
 	
-	PIXI.extras.TilingSprite.call(this, mid_texture, 721, 500);
+	PIXI.extras.TilingSprite.call(this, mid_texture, 720, 250);
 	
 	this.position.x = 0;
-	this.position.y = 0;
+	this.position.y = 248;
 	this.tilePosition.x = 0;
 	this.tilePosition.y = 0;
 
