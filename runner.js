@@ -38,6 +38,11 @@ title_view.interactive = true;
 var player = {};
 player.jumping = false;
 
+var first_run = true;
+
+var first_platforms = [];
+
+var speed = 3; // The overall scaling of the game speed
 
 
 PIXI.loader
@@ -51,6 +56,7 @@ function loadMenus(){
 	title_view.addChild(title_screen);
 	title_screen.interactive = true;
 	title_screen.on('mousedown', changeView.bind(null, game_view));
+	title_screen.on('mousedown', firstRun);
 
 }
 
@@ -64,7 +70,7 @@ PIXI.loader
 
 function loadGame(){
 
-	
+	first_run = true;
 
 	player = new PIXI.Sprite(PIXI.Texture.fromFrame('player.png'));
 	game_view.addChild(player);
@@ -73,11 +79,15 @@ function loadGame(){
 	player.anchor.y = 1;
 	player.position.x = 120;
 	player.position.y = 400;
-	player.on('')
 
 
-	var platform_texture = PIXI.Texture.fromFrame('mid0.png');
-	//var platform_array = [];
+
+	
+
+
+	var platform_texture = PIXI.Texture.fromFrame('mid_0.png');
+	
+
 	for(var k = 0; k <= game_width + 120; k += 120){
 
 		var platformk = new PIXI.Sprite(platform_texture);
@@ -88,14 +98,13 @@ function loadGame(){
 		platformk.position.x = k;
 		platformk.position.y = 625;
 
-		//platform_array.push(platformk);
+		first_platforms.push(platformk);
+
 	}
 
-
-
-
-
 }
+
+
 
 // Add any keyboard functions we need to this array
 // These are they only keys that we will steal control from
@@ -212,21 +221,85 @@ function checkCollison() {
 	}
 }
 
+
+
+function firstRun(){
+
+	
+		for(var m = 0; m < first_platforms.length; m++){
+
+			first_platforms[m].position.x -= speed;
+
+			if(first_platforms[first_platforms.length-1].position.x <= 0){
+				platforms.removeChild(first_platforms[m]);
+			}
+		}
+
+		if(first_platforms[first_platforms.length-1].position.x > 0){
+			requestAnimationFrame(firstRun);
+		}
+	
+}
+
+var distance_from_last = -100;
+var last_y = 450;
+
+var platform_1 = {};
+var platform_2 = {};
+
+
+
+console.log(platform_1 == true);
+
 function animate(){
+
 	requestAnimationFrame(animate);
-
-
 	scroller.update();
 
-	for(var k = 0; k < platforms.children.length; k++){
 
-		platforms.children[k].position.x -= 4;
+	if (platform_2.on) platform_2.update(speed);
+	if (platform_1.on) platform_1.update(speed);
 
-		if (platforms.children[k].position.x == -120){
-			platforms.children[k].position.x = game_width + 120;
+	if(distance_from_last >= 200){
+		if(!(platform_1.on)){
+			console.log("p1");
+			platform_1 = new Platform(last_y, platforms);
+			last_y = platform_1.height;
+			distance_from_last = -(platform_1.width*120);
+
+		}
+
+		else if(!(platform_2.on)){
+			console.log("p2")
+			platform_2 = new Platform(last_y, platforms);
+			last_y = platform_2.height;			
+			distance_from_last = -(platform_2.width*120);
+
 		}
 	}
+		// turn p2 on
+		// remove p1
 
+	
+
+
+	/*if(distance_from_last >= 200){
+			if(first_run){
+				platform_1 = new Platform(100, platforms);
+				distance_from_last = -(platform_1.width*120);
+				first_run = false;
+				on_1 = true;
+				last_y = platform_1.height;
+			}
+			else{
+				platform_2 = new Platform(last_y, platforms);
+				on_2 = true;
+				last_y = platform_2.height;
+			}*/
+	//}
+
+
+	distance_from_last += speed;
 	renderer.render(stage);
 }
 
