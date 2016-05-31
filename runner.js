@@ -37,7 +37,8 @@ title_view.interactive = true;
 
 var player = {};
 player.jumping = false;
-
+player.runningFrames = [];
+player.runner;
 
 
 PIXI.loader
@@ -59,21 +60,23 @@ function loadMenus(){
 PIXI.loader
 	.add('./scroller_assets/platform_assets/platform_assets.json')
 	.add('./entity_assets/entity_assets.json')
+	.add("running.json") // runing player
 	.load(loadGame);
 
 
 function loadGame(){
 
-	
-
-	player = new PIXI.Sprite(PIXI.Texture.fromFrame('player.png'));
-	game_view.addChild(player);
-	player.interactive = true;
-	player.anchor.x = .5;
-	player.anchor.y = 1;
-	player.position.x = 120;
-	player.position.y = 400;
-	player.on('')
+	for(i=1; i<=4; i++) {
+		player.runningFrames.push(PIXI.Texture.fromFrame('running' + i + '.png'));
+	}
+	player.runner = new PIXI.extras.MovieClip(player.runningFrames);
+	game_view.addChild(player.runner);
+	player.runner.animationSpeed = 0.1;
+	player.runner.anchor.x = .5;
+	player.runner.anchor.y = 1;
+	player.runner.position.x = 120;
+	player.runner.position.y = 400;
+	player.runner.play();
 
 
 	var platform_texture = PIXI.Texture.fromFrame('mid0.png');
@@ -210,6 +213,11 @@ function checkCollison() {
 		}
 		
 	}
+}
+
+// Called when player collides with something or falls
+function die() {
+	
 }
 
 function animate(){
