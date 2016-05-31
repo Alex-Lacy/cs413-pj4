@@ -45,8 +45,8 @@ var first_platforms = [];
 
 var speed = 3; // The overall scaling of the game speed
 
-player.runningFrames = [];
-player.runner;
+player.runningFrames;
+//player.runner;
 
 
 
@@ -78,7 +78,7 @@ function loadGame(){
 
 
 	first_run = true;
-
+/*
 	player = new PIXI.Sprite(PIXI.Texture.fromFrame('player.png'));
 	game_view.addChild(player);
 	player.interactive = true;
@@ -87,19 +87,21 @@ function loadGame(){
 	player.position.x = 120;
 	player.position.y = 400;
 
+*/
 
 
+	player.runningFrames = [];
 	for(i=1; i<=4; i++) {
 		player.runningFrames.push(PIXI.Texture.fromFrame('running' + i + '.png'));
 	}
-	player.runner = new PIXI.extras.MovieClip(player.runningFrames);
-	game_view.addChild(player.runner);
-	player.runner.animationSpeed = 0.1;
-	player.runner.anchor.x = .5;
-	player.runner.anchor.y = 1;
-	player.runner.position.x = 120;
-	player.runner.position.y = 400;
-	player.runner.play();
+	player = new PIXI.extras.MovieClip(player.runningFrames);
+	game_view.addChild(player);
+	player.animationSpeed = 0.1;
+	player.anchor.x = .5;
+	player.anchor.y = 1;
+	player.position.x = 120;
+	player.position.y = 400;
+	player.play();
 
 
 
@@ -260,8 +262,8 @@ function firstRun(){
 	
 }
 
-var distance_from_last = -100;
-var last_y = 450;
+var distance_from_last = -150;
+var last_y = 475;
 
 var platform_1 = {};
 var platform_2 = {};

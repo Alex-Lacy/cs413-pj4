@@ -6,7 +6,14 @@ function Platform(previous_y, stage){
 	this.texture = PIXI.Texture.fromImage('mid_0.png');
 
 	this.width = Math.random() * (8 - 4) + 4;
-	this.height = Math.random() * ((previous_y - 20) - (previous_y + 20)) + (previous_y + 20);// a random number between prev_y+100 and prev_y-100
+	this.height = Math.random() * ((previous_y - 50) - 500) + (500);// a random number between prev_y+100 and prev_y-100
+	if(this.height >= 480){
+		this.height = 450;
+	}
+
+	else if (this.height <= 250){
+		this.height = 250;
+	}
 
 	this.segments = [];
 	this.on = true;
@@ -17,7 +24,7 @@ function Platform(previous_y, stage){
 		stage.addChild(temp_sprite);
 		temp_sprite.anchor.x = 1.0;
 		temp_sprite.anchor.y = 0.0;
-		temp_sprite.position.x = (i * 120) + 800;
+		temp_sprite.position.x = (i * 120) + 900;
 		temp_sprite.position.y = this.height;
 
 		this.segments.push(temp_sprite);

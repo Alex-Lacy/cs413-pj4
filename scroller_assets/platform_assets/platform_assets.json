@@ -1,6 +1,6 @@
 {"frames": {
 
-"mid0.png":
+"mid_0.png":
 {
 	"frame": {"x":0,"y":0,"w":120,"h":250},
 	"rotated": false,
@@ -16,6 +16,6 @@
 	"format": "RGBA8888",
 	"size": {"w":120,"h":250},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:5eedf8237310d12e2f7587c7483e5477:9197ad0e8c2339bb148096a5341bf616:de17b0e7a6b1a1e54b9a5aee6e8f21fb$"
+	"smartupdate": "$TexturePacker:SmartUpdate:dc08022af9660c821a555a6616a62bcf:9197ad0e8c2339bb148096a5341bf616:de17b0e7a6b1a1e54b9a5aee6e8f21fb$"
 }
 }
