@@ -137,15 +137,25 @@ window.addEventListener('keydown', function(e){
 			return;
 		else if (e.keyCode == 32)
 			jump();
+			
 	}
 
 });
-
+ 
 
 
 function jump(){
+	player.jumping = true;
+	var jump_time = 700;
 	
-	player.y -= 50;
+	// change player position
+	createjs.Tween.get(player.position).to({y: (player.y - 200)}, jump_time); // tween the player to the max height, then let fall() do the rest
+	window.setTimeout(function () { player.jumping = false; }, jump_time);
+	
+	//player.y -= 100;
+	
+	// set player.jumping back to false
+	
 	/**
 	var jump_time = 500;
 
@@ -155,7 +165,7 @@ function jump(){
 	}
 
 	else{
-		player.jumping = true;
+		player.jumping = true;    
 		createjs.Tween.get(player).to({y: player.position.y - 120}, jump_time);
 		window.setTimeout(jump, jump_time);
 	}
@@ -170,7 +180,10 @@ function jump(){
 // Simulates gravity, player.y should be increasing (toward the bottom of the screen)
 // unless there is an obstacle under him
 function fall(){ 
-	player.y += 10;
+	// check if player is jumping
+	if (!player.jumping){	
+		player.y += 10;
+	}
 }
 
 
@@ -189,8 +202,8 @@ function offScreen(){
 
 function collisionPlatform(){// platform x = 1, y = 0 = top right //player x = .5, y= 1 = feet
 	if(platform_1.on && player.x > (platform_1.segments[0].x-120) && player.x < platform_1.segments[platform_1.segments.length-1].x){ // player inside edges of platform (mult by 120 to get pixels)
-		if (player.y < platform_1.height || player.y > (platform_1.height + 70)){ // player is above/ below the platform
-			fall();
+		if (player.y < platform_1.height || player.y > (platform_1.height + 70)){ // player is above/ below the platform	
+			fall(); // fall() checks if the player is jumping
 		}
 	}
 
@@ -200,6 +213,7 @@ function collisionPlatform(){// platform x = 1, y = 0 = top right //player x = .
 		}
 	}
 	
+	// check if player is jumping
 	else fall();
 }
 
