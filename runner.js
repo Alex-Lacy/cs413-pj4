@@ -27,6 +27,9 @@ var scroller = new Scroller(game_view);
 var platforms = new PIXI.Container();
 game_view.addChild(platforms);
 
+var obstacles = new PIXI.Container();
+game_view.addChild(obstacles);
+
 game_view.visible = false;
 game_view.interactive = false;
 
@@ -225,6 +228,7 @@ function changeView(view){
 
 // As long as there is less then 3 objects generate a new set of object 
 // TODO: add other object groups
+var laser_texture = PIXI.Texture.fromImage('laser_trap_air_1.png');
 function generateObstacles(centerX, centerY) {
 	
 
@@ -233,19 +237,21 @@ function generateObstacles(centerX, centerY) {
 	// Generate a random number and position and type of lasers
 
 	var container = new PIXI.Container();
-	var amount = Math.floor(Math.random() * 3);
+	
+	var amount = Math.floor(Math.random() * (4 -1) + 1); // The top range in this formula for random is exclusive, 
+	// so using floor the top range has to be one more then what you want
 	
 	for(i=0; i < amount; i++){
-		var laserType = Math.floor(Math.random() * (2 -1) + 1);
-		console.log(laserType);
+		var laserType = Math.floor(Math.random() * (3 -1) + 1);
+		
 		var laserDeltaX = Math.floor(Math.random() * 400) - 200;
 		var laserDeltaY = Math.floor(Math.random() * 200) - 100;
-		var laser_texture = PIXI.Texture.fromImage('laser_trap_air_1.png');
-		var trap = new PIXI.extras.MovieClip([laser_texture]);
+		
+		var trap = new PIXI.extras.MovieClip([laser_texture, laser_texture]);
 
 		trap.position.x = centerX + laserDeltaX;
-		trap.position.y = centerY + laserDeltaY;
-		trap.animationSpeed = .5;
+		trap.position.y = centerY - 250;// - laserDeltaY;
+		trap.animationSpeed = .1;
 		trap.play();
 
 		container.addChild(trap);
@@ -253,7 +259,7 @@ function generateObstacles(centerX, centerY) {
 		
 		
 	}
-	stage.children[1].children[3].addChild(container);
+	obstacles.addChild(container);
 
 
 }
@@ -262,16 +268,17 @@ function generateObstacles(centerX, centerY) {
 function moveObstacles(amount) {
 
 	
-	for(i = 0; i < stage.children[1].children[3].children.length; i++) {
-		stage.children[1].children[3].children[i].x -= amount;
-		
-		if(stage.children[1].children[3].children[i].x + 400 <= 0) {
+	for(var j = 0; j < obstacles.children.length; j++){
 
-			// remove container from game view and destroy its children (ie the sprite)
-			var toDestroy = stage.children[1].children[3].removeChildAt(i);
-			toDestroy.destroy(true);
+		obstacles.children[j].position.x -= speed;
+
+		if(obstacles.children[j].position.x <= 0){
+			stage.removeChild(obstacles.children[j]);
+			console.log(obstacles.children);
 		}
 	}
+
+
 }
 
 // Cycles through each object and checks for collison
@@ -333,48 +340,47 @@ function animate(){
 	scroller.update();
 
 		if(game_on){
-		if (platform_1.on || platform_2.on) moveObstacles(speed);
+			if (platform_1.on || platform_2.on) moveObstacles(speed);
 
-		if (platform_2.on) platform_2.update(speed);
-		if (platform_1.on) platform_1.update(speed);
+			if (platform_2.on) platform_2.update(speed);
 
+			if (platform_1.on){
+				platform_1.update(speed);
 
-		if(distance_from_last >= 200){
-			if(!(platform_1.on)){
-				
-				platform_1 = new Platform(last_y, platforms);
-				generateObstacles(platform_1.segments[Math.floor(platform_1.segments.length/2)].position.x, platform_2.height -100);
-				last_y = platform_1.height;
-				distance_from_last = -(platform_1.width*120);
+				if(platform_1.segments[0].x < player.x){ // the first platform has been created and passed where the play is
+					p_collission = true;
+				}
+			}
+		
 
+		
+			if(p_collission){ // the initial creation of segments that were not an actual platform object have been removed from the screen
+				collisionPlatform();
 			}
 
-			else if(!(platform_2.on)){
-				
-				platform_2 = new Platform(last_y, platforms);
-				generateObstacles(platform_2.segments[Math.floor(platform_2.segments.length/2)].position.x, platform_2.height -100);
-				last_y = platform_2.height;			
-				distance_from_last = -(platform_2.width*120);
 
+			if(distance_from_last >= 200){
+				if(!(platform_1.on)){
+					
+					platform_1 = new Platform(last_y, platforms);
+					generateObstacles(platform_1.segments[Math.floor(platform_1.segments.length/2)].position.x, platform_1.height);
+					last_y = platform_1.height;
+					distance_from_last = -(platform_1.width*120);
+
+				}
+
+				else if(!(platform_2.on)){
+					
+					platform_2 = new Platform(last_y, platforms);
+					generateObstacles(platform_2.segments[Math.floor(platform_2.segments.length/2)].position.x, platform_2.height);
+					last_y = platform_2.height;			
+					distance_from_last = -(platform_2.width*120);
+
+				}
 			}
-		}
 
 
 	}
-
-
-	
-	if(game_on && platform_1.on){
-		if(platform_1.segments[0].x < player.x){ // the first platform has been created and passed where the play is
-			p_collission = true;
-		}
-	
-		if(p_collission){ // the initial creation of segments that were not an actual platform object have been removed from the screen
-			collisionPlatform();
-		}
-	}
-
-
 
 
 	distance_from_last += speed;
