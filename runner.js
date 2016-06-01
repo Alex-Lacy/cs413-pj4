@@ -47,6 +47,8 @@ var first_platforms = [];
 
 var speed = 3; // The overall scaling of the game speed
 
+var game_on = false;
+
 player.runningFrames;
 //player.runner;
 
@@ -71,7 +73,7 @@ function loadMenus(){
 
 PIXI.loader
 	.add('./scroller_assets/platform_assets/platform_assets.json')
-	.add('./entity_assets/entity_assets.json')
+	//.add('./entity_assets/entity_assets.json')
 	.add("running.json") // runing player
 	.load(loadGame);
 
@@ -98,7 +100,7 @@ function loadGame(){
 	}
 	player = new PIXI.extras.MovieClip(player.runningFrames);
 	game_view.addChild(player);
-	player.animationSpeed = 0.1;
+	player.animationSpeed = 0.5;
 	player.anchor.x = .5;
 	player.anchor.y = 1;
 	player.position.x = 120;
@@ -189,36 +191,50 @@ function changeView(view){
 	
 }
 
+
+var texture32 = PIXI.Texture.fromImage('laser_trap_air_1.png');
+
+
+
 function generateObstacles(centerX, centerY) {
 	
 	// Create a new container for the object
 	var container = new PIXI.Container();
-	
-	// Generate a random number and posistion and type of lasers
+	//container.anchor.x = 0.5;
+	//container.anchor.y = 0.5;
+	// Generate a random number and position and type of lasers
 	var amount = Math.floor(Math.random() * 3);
 	
 	for(i=0; i < amount; i++){
-		var laserType = Math.floor(Math.random() * 2);
+		var laserType = Math.floor(Math.random() * (2 -1) + 1);
+		console.log(laserType);
 		var laserDeltaX = Math.floor(Math.random() * 400) - 200;
 		var laserDeltaY = Math.floor(Math.random() * 200) - 100;
-		var trap = new PIXI.Sprite(PIXI.Texture.fromFrame('obstacle_assets/spike_trap_floor_' +  laserType + '.png'));
+		var texture32 = PIXI.Texture.fromImage('laser_trap_air_1.png');
+		var trap = new PIXI.extras.MovieClip([texture32]);
+
+		trap.position.x = centerX + laserDeltaX;
+		trap.position.y = centerY + laserDeltaY;
+		trap.animationSpeed = .5;
+		trap.play();
+
 		container.addChild(trap);
-		container[i].position.x = centerX + laserDeltaX;
-		container[i].position.x = centerX + laserDeltaY;
-		container.anchor.x = 0.5;
-		container.anchor.y = 0.5;
+
+		
 		
 	}
-	stage.children[2].addChildAt(container);
+	stage.children[1].children[3].addChild(container);
 }
 
 // Cycles through each obstacle and moves based on the amount given
 function moveObstacles(amount) {
-	for(i = 0; i < sstage.children[1].children[1].length; i++) {
-		stage.children[1].children[1].children[i].x -= amount;
-		if(stage.children[1].children[1].children[i].x + 400 <= 0) {
+	
+	for(i = 0; i < stage.children[1].children[3].children.length; i++) {
+		stage.children[1].children[3].children[i].x -= amount;
+		
+		if(stage.children[1].children[3].children[i].x + 400 <= 0) {
 			// remove container from game view and destroy its children (ie the sprite)
-			var toDestroy = stage.children[2].removeChildAt(i);
+			var toDestroy = stage.children[1].children[3].removeChildAt(i);
 			toDestroy.destroy(true);
 		}
 	}
@@ -236,6 +252,7 @@ function checkCollisonObjects() {
 
 function firstRun(){
 
+		game_on = true;
 	
 		for(var m = 0; m < first_platforms.length; m++){
 
@@ -260,7 +277,6 @@ var platform_2 = {};
 
 
 
-console.log(platform_1 == true);
 
 
 // Called when player collides with something or falls
@@ -274,47 +290,34 @@ function animate(){
 	requestAnimationFrame(animate);
 	scroller.update();
 
+		if(game_on){
+		if (platform_1.on || platform_2.on) moveObstacles(speed);
 
-	if (platform_2.on) platform_2.update(speed);
-	if (platform_1.on) platform_1.update(speed);
+		if (platform_2.on) platform_2.update(speed);
+		if (platform_1.on) platform_1.update(speed);
 
-	if(distance_from_last >= 200){
-		if(!(platform_1.on)){
-			console.log("p1");
-			platform_1 = new Platform(last_y, platforms);
-			last_y = platform_1.height;
-			distance_from_last = -(platform_1.width*120);
-
-		}
-
-		else if(!(platform_2.on)){
-			console.log("p2")
-			platform_2 = new Platform(last_y, platforms);
-			last_y = platform_2.height;			
-			distance_from_last = -(platform_2.width*120);
-
-		}
-	}
-		// turn p2 on
-		// remove p1
-
-	
-
-
-	/*if(distance_from_last >= 200){
-			if(first_run){
-				platform_1 = new Platform(100, platforms);
-				distance_from_last = -(platform_1.width*120);
-				first_run = false;
-				on_1 = true;
+		if(distance_from_last >= 200){
+			if(!(platform_1.on)){
+				
+				platform_1 = new Platform(last_y, platforms);
+				generateObstacles(platform_1.segments[Math.floor(platform_1.segments.length/2)].position.x, platform_2.height -100);
 				last_y = platform_1.height;
+				distance_from_last = -(platform_1.width*120);
+
 			}
-			else{
+
+			else if(!(platform_2.on)){
+				
 				platform_2 = new Platform(last_y, platforms);
-				on_2 = true;
-				last_y = platform_2.height;
-			}*/
-	//}
+				generateObstacles(platform_2.segments[Math.floor(platform_2.segments.length/2)].position.x, platform_2.height -100);
+				last_y = platform_2.height;			
+				distance_from_last = -(platform_2.width*120);
+
+			}
+		}
+
+	}
+
 
 
 	distance_from_last += speed;
