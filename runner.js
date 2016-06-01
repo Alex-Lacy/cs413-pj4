@@ -263,7 +263,7 @@ function generateObstacles(centerX, centerY) {
 
 
 }
-
+  
 // Cycles through each obstacle and moves based on the amount given
 function moveObstacles(amount) {
 
@@ -272,9 +272,9 @@ function moveObstacles(amount) {
 
 		obstacles.children[j].position.x -= speed;
 
-		if(obstacles.children[j].position.x <= 0){
-			stage.removeChild(obstacles.children[j]);
-			console.log(obstacles.children);
+		if(obstacles.children[j].position.x + game_width * 2 <= 0){
+			obstacles.removeChildAt(j);
+			
 		}
 	}
 
@@ -316,7 +316,7 @@ function firstRun(){
 	
 }
 
-var distance_from_last = -150;
+var distance_from_last = -100;
 var last_y = 475;
 
 var platform_1 = {};
@@ -379,11 +379,11 @@ function animate(){
 				}
 			}
 
-
+			distance_from_last += speed;
 	}
 
 
-	distance_from_last += speed;
+	
 	renderer.render(stage);
 
 }

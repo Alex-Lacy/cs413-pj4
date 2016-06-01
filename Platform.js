@@ -40,7 +40,7 @@ Platform.prototype.update = function(speed){
 		this.segments[j].position.x -= speed;
 
 		if(this.segments[this.segments.length-1].position.x <= 0){
-			stage.removeChild(this.segments[j]);
+			stage.removeChild(j);
 			this.on = false;
 		}
 	}
