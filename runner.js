@@ -82,16 +82,6 @@ function loadGame(){
 
 
 	first_run = true;
-/*
-	player = new PIXI.Sprite(PIXI.Texture.fromFrame('player.png'));
-	game_view.addChild(player);
-	player.interactive = true;
-	player.anchor.x = .5;
-	player.anchor.y = 1;
-	player.position.x = 120;
-	player.position.y = 400;
-
-*/
 
 
 	player.runningFrames = [];
@@ -100,7 +90,7 @@ function loadGame(){
 	}
 	player = new PIXI.extras.MovieClip(player.runningFrames);
 	game_view.addChild(player);
-	player.animationSpeed = 0.5;
+	player.animationSpeed = 0.25;
 	player.anchor.x = .5;
 	player.anchor.y = 1;
 	player.position.x = 120;
@@ -192,7 +182,7 @@ function changeView(view){
 }
 
 
-var texture32 = PIXI.Texture.fromImage('laser_trap_air_1.png');
+
 
 
 
@@ -210,8 +200,8 @@ function generateObstacles(centerX, centerY) {
 		console.log(laserType);
 		var laserDeltaX = Math.floor(Math.random() * 400) - 200;
 		var laserDeltaY = Math.floor(Math.random() * 200) - 100;
-		var texture32 = PIXI.Texture.fromImage('laser_trap_air_1.png');
-		var trap = new PIXI.extras.MovieClip([texture32]);
+		var laser_texture = PIXI.Texture.fromImage('laser_trap_air_1.png');
+		var trap = new PIXI.extras.MovieClip([laser_texture]);
 
 		trap.position.x = centerX + laserDeltaX;
 		trap.position.y = centerY + laserDeltaY;
