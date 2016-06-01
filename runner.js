@@ -4,7 +4,6 @@ var game_width = 720;
 var game_height = 500;
 var game_scale = 1;
 
-var objectsStart = 1;
 
 var gameport = document.getElementById("gameport");
 var renderer = new PIXI.autoDetectRenderer(game_width, game_height);
@@ -26,6 +25,9 @@ var scroller = new Scroller(game_view);
 
 var platforms = new PIXI.Container();
 game_view.addChild(platforms);
+
+var objects = new PIXI.Container();
+game_view.addChild(objects);
 
 game_view.visible = false;
 game_view.interactive = false;
@@ -187,40 +189,34 @@ function changeView(view){
 	
 }
 
-// As long as there is less then 3 objects generate a new set of object 
-// TODO: add other object groups
-function generateObstacles() {
-	if(objects >= 3) {return;}
+function generateObstacles(centerX, centerY) {
 	
-	// Create a new container for the object and add it to the game view
+	// Create a new container for the object
 	var container = new PIXI.Container();
 	
-	// Random type
-	var type = Math.floor(Math.random() * 2);
-	var trap;
-	if (type == 0) {
-		// Air traps
-		trap = new PIXI.Sprite(PIXI.Texture.fromFrame('obstacle_assets/laser_trap_air_1.png'));
-		container.addChild(trap);
-		container[0].y += 75; // Moves the trap into the air enough that you need to duck
-	}
-	else {
-		// Ground traps 
-		trap = new PIXI.Sprite(PIXI.Texture.fromFrame('obstacle_assets/spike_trap_floor_1.png'));
-		container.addChild(trap);
-	}
-	container.anchor.x = 0.5;
-	container.anchor.y = 0.5;
-	stage.children[2].addChildAt(container);
-	objects += 1;
+	// Generate a random number and posistion and type of lasers
+	var amount = Math.floor(Math.random() * 3);
 	
+	for(i=0; i < amount; i++){
+		var laserType = Math.floor(Math.random() * 2);
+		var laserDeltaX = Math.floor(Math.random() * 400) - 200;
+		var laserDeltaY = Math.floor(Math.random() * 200) - 100;
+		var trap = new PIXI.Sprite(PIXI.Texture.fromFrame('obstacle_assets/spike_trap_floor_' +  laserType + '.png'));
+		container.addChild(trap);
+		container[i].position.x = centerX + laserDeltaX;
+		container[i].position.x = centerX + laserDeltaY;
+		container.anchor.x = 0.5;
+		container.anchor.y = 0.5;
+		
+	}
+	stage.children[2].addChildAt(container);
 }
 
 // Cycles through each obstacle and moves based on the amount given
 function moveObstacles(amount) {
-	for(i = objectsStart; i < stage.children[2].children.length; i++) {
-		stage.children[2].children[i].x -= amount;
-		if(stage.children[2].children[i].x + 125 <= 0) {
+	for(i = 0; i < sstage.children[1].children[1].length; i++) {
+		stage.children[1].children[1].children[i].x -= amount;
+		if(stage.children[1].children[1].children[i].x + 400 <= 0) {
 			// remove container from game view and destroy its children (ie the sprite)
 			var toDestroy = stage.children[2].removeChildAt(i);
 			toDestroy.destroy(true);
@@ -229,17 +225,11 @@ function moveObstacles(amount) {
 }
 
 // Cycles through each object and checks for collison
-function checkCollison() {
+function checkCollisonObjects() {
 	var playerX = player.position.x;
 	var playerY = player.position.y;
-	for(i = objectsStart; i < stage.children[2].children.length; i++) {
-		if(stage.children[2].children[i].x <= playerX + 62.5 && stage.children[2].children[i].x >= playerX - 62.5) {
-			if(stage.children[2].children[i].y <= playerY + 62.5 && stage.children[2].children[i].y >= playerY - 62.5) {
-				// Collsion results?
-			}
-		}
-		
-	}
+	
+	//stage.children[1].children[1]
 }
 
 
