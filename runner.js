@@ -305,12 +305,12 @@ function firstRun(){
 
 			first_platforms[m].position.x -= speed;
 
-			if(first_platforms[first_platforms.length-1].position.x <= 0){
+			if(first_platforms[first_platforms.length-1].position.x <= -120){
 				platforms.removeChild(first_platforms[m]);
 			}
 		}
 
-		if(first_platforms[first_platforms.length-1].position.x > 0){
+		if(first_platforms[first_platforms.length-1].position.x > -120){
 			requestAnimationFrame(firstRun);
 		}
 	
