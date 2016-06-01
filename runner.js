@@ -45,6 +45,8 @@ var first_platforms = [];
 
 var speed = 3; // The overall scaling of the game speed
 
+var game_on = false;
+
 player.runningFrames;
 //player.runner;
 
@@ -69,7 +71,7 @@ function loadMenus(){
 
 PIXI.loader
 	.add('./scroller_assets/platform_assets/platform_assets.json')
-	.add('./entity_assets/entity_assets.json')
+	//.add('./entity_assets/entity_assets.json')
 	.add("running.json") // runing player
 	.load(loadGame);
 
@@ -78,16 +80,6 @@ function loadGame(){
 
 
 	first_run = true;
-/*
-	player = new PIXI.Sprite(PIXI.Texture.fromFrame('player.png'));
-	game_view.addChild(player);
-	player.interactive = true;
-	player.anchor.x = .5;
-	player.anchor.y = 1;
-	player.position.x = 120;
-	player.position.y = 400;
-
-*/
 
 
 	player.runningFrames = [];
@@ -96,7 +88,7 @@ function loadGame(){
 	}
 	player = new PIXI.extras.MovieClip(player.runningFrames);
 	game_view.addChild(player);
-	player.animationSpeed = 0.1;
+	player.animationSpeed = 0.25;
 	player.anchor.x = .5;
 	player.anchor.y = 1;
 	player.position.x = 120;
@@ -233,40 +225,50 @@ function changeView(view){
 
 // As long as there is less then 3 objects generate a new set of object 
 // TODO: add other object groups
-function generateObstacles() {
-	if(objects >= 3) {return;}
+function generateObstacles(centerX, centerY) {
 	
-	// Create a new container for the object and add it to the game view
+
+	//container.anchor.x = 0.5;
+	//container.anchor.y = 0.5;
+	// Generate a random number and position and type of lasers
+
 	var container = new PIXI.Container();
+	var amount = Math.floor(Math.random() * 3);
 	
-	// Random type
-	var type = Math.floor(Math.random() * 2);
-	var trap;
-	if (type == 0) {
-		// Air traps
-		trap = new PIXI.Sprite(PIXI.Texture.fromFrame('obstacle_assets/laser_trap_air_1.png'));
+	for(i=0; i < amount; i++){
+		var laserType = Math.floor(Math.random() * (2 -1) + 1);
+		console.log(laserType);
+		var laserDeltaX = Math.floor(Math.random() * 400) - 200;
+		var laserDeltaY = Math.floor(Math.random() * 200) - 100;
+		var laser_texture = PIXI.Texture.fromImage('laser_trap_air_1.png');
+		var trap = new PIXI.extras.MovieClip([laser_texture]);
+
+		trap.position.x = centerX + laserDeltaX;
+		trap.position.y = centerY + laserDeltaY;
+		trap.animationSpeed = .5;
+		trap.play();
+
 		container.addChild(trap);
-		container[0].y += 75; // Moves the trap into the air enough that you need to duck
+
+		
+		
 	}
-	else {
-		// Ground traps 
-		trap = new PIXI.Sprite(PIXI.Texture.fromFrame('obstacle_assets/spike_trap_floor_1.png'));
-		container.addChild(trap);
-	}
-	container.anchor.x = 0.5;
-	container.anchor.y = 0.5;
-	stage.children[2].addChildAt(container);
-	objects += 1;
-	
+	stage.children[1].children[3].addChild(container);
+
+
 }
 
 // Cycles through each obstacle and moves based on the amount given
 function moveObstacles(amount) {
-	for(i = objectsStart; i < stage.children[2].children.length; i++) {
-		stage.children[2].children[i].x -= amount;
-		if(stage.children[2].children[i].x + 125 <= 0) {
+
+	
+	for(i = 0; i < stage.children[1].children[3].children.length; i++) {
+		stage.children[1].children[3].children[i].x -= amount;
+		
+		if(stage.children[1].children[3].children[i].x + 400 <= 0) {
+
 			// remove container from game view and destroy its children (ie the sprite)
-			var toDestroy = stage.children[2].removeChildAt(i);
+			var toDestroy = stage.children[1].children[3].removeChildAt(i);
 			toDestroy.destroy(true);
 		}
 	}
@@ -289,6 +291,7 @@ function checkCollison() {
 
 
 function firstRun(){
+
 		game_on = true;
 	
 		for(var m = 0; m < first_platforms.length; m++){
@@ -314,7 +317,6 @@ var platform_2 = {};
 
 
 
-console.log(platform_1 == true);
 
 
 // Called when player collides with something or falls
@@ -330,27 +332,37 @@ function animate(){
 	requestAnimationFrame(animate);
 	scroller.update();
 
+		if(game_on){
+		if (platform_1.on || platform_2.on) moveObstacles(speed);
 
-	if (platform_2.on) platform_2.update(speed);
-	if (platform_1.on) platform_1.update(speed);
+		if (platform_2.on) platform_2.update(speed);
+		if (platform_1.on) platform_1.update(speed);
 
-	if(distance_from_last >= 200 && game_on){
-		if(!(platform_1.on)){
-			console.log("p1");
-			platform_1 = new Platform(last_y, platforms);
-			last_y = platform_1.height;
-			distance_from_last = -(platform_1.width*120);
 
+		if(distance_from_last >= 200){
+			if(!(platform_1.on)){
+				
+				platform_1 = new Platform(last_y, platforms);
+				generateObstacles(platform_1.segments[Math.floor(platform_1.segments.length/2)].position.x, platform_2.height -100);
+				last_y = platform_1.height;
+				distance_from_last = -(platform_1.width*120);
+
+			}
+
+			else if(!(platform_2.on)){
+				
+				platform_2 = new Platform(last_y, platforms);
+				generateObstacles(platform_2.segments[Math.floor(platform_2.segments.length/2)].position.x, platform_2.height -100);
+				last_y = platform_2.height;			
+				distance_from_last = -(platform_2.width*120);
+
+			}
 		}
 
-		else if(!(platform_2.on)){
-			console.log("p2")
-			platform_2 = new Platform(last_y, platforms);
-			last_y = platform_2.height;			
-			distance_from_last = -(platform_2.width*120);
 
-		}
 	}
+
+
 	
 	if(game_on && platform_1.on){
 		if(platform_1.segments[0].x < player.x){ // the first platform has been created and passed where the play is
@@ -363,24 +375,12 @@ function animate(){
 	}
 
 
-	/*if(distance_from_last >= 200){
-			if(first_run){
-				platform_1 = new Platform(100, platforms);
-				distance_from_last = -(platform_1.width*120);
-				first_run = false;
-				on_1 = true;
-				last_y = platform_1.height;
-			}
-			else{
-				platform_2 = new Platform(last_y, platforms);
-				on_2 = true;
-				last_y = platform_2.height;
-			}*/
-	//}
 
 
 	distance_from_last += speed;
 	renderer.render(stage);
+
 }
+
 
 animate();
