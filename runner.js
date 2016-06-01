@@ -4,6 +4,7 @@ var game_width = 720;
 var game_height = 500;
 var game_scale = 1;
 
+var objectsStart = 1;
 
 var gameport = document.getElementById("gameport");
 var renderer = new PIXI.autoDetectRenderer(game_width, game_height);
@@ -25,9 +26,6 @@ var scroller = new Scroller(game_view);
 
 var platforms = new PIXI.Container();
 game_view.addChild(platforms);
-
-var objects = new PIXI.Container();
-game_view.addChild(objects);
 
 game_view.visible = false;
 game_view.interactive = false;
@@ -143,7 +141,9 @@ window.addEventListener('keydown', function(e){
 
 
 function jump(){
-
+	
+	player.y -= 50;
+	/**
 	var jump_time = 500;
 
 	if(player.jumping){
@@ -156,12 +156,54 @@ function jump(){
 		createjs.Tween.get(player).to({y: player.position.y - 120}, jump_time);
 		window.setTimeout(jump, jump_time);
 	}
-
+	**/
 	/////
 
 }
 
+// collision with platforms //////////////////////////////////////////////////////////////////////
+//
 
+// Simulates gravity, player.y should be increasing (toward the bottom of the screen)
+// unless there is an obstacle under him
+function fall(){ 
+	player.y += 10;
+}
+
+
+// checks if player coords are off screen,
+// returns TRUE if the player is off screen
+// returns FALSE if the player is still on the screen
+function offScreen(){
+	
+}
+
+
+// puts the above movement functions into the collision function,
+// so that when the player collides with something
+// movement matches the collision
+
+
+function collisionPlatform(){// platform x = 1, y = 0 = top right //player x = .5, y= 1 = feet
+	if(platform_1.on && player.x > (platform_1.segments[0].x-120) && player.x < platform_1.segments[platform_1.segments.length-1].x){ // player inside edges of platform (mult by 120 to get pixels)
+		if (player.y < platform_1.height || player.y > (platform_1.height + 70)){ // player is above/ below the platform
+			fall();
+		}
+	}
+
+	else if(platform_2.on && player.x > (platform_2.segments[0].x-120) && player.x < platform_2.segments[platform_2.segments.length-1].x){ // player inside edges of platform (mult by 120 to get pixels)
+		if (player.y < platform_2.height || player.y > (platform_2.height + 70)){ // player is above/ below the platform
+			fall();
+		}
+	}
+	
+	else fall();
+}
+
+
+
+//
+// end collision with platforms //////////////////////////////////////////////////////////////////
 
 
 // Changes the current displaying container
@@ -181,18 +223,16 @@ function changeView(view){
 	
 }
 
-
-
-
-
-
+// As long as there is less then 3 objects generate a new set of object 
+// TODO: add other object groups
 function generateObstacles(centerX, centerY) {
 	
-	// Create a new container for the object
-	var container = new PIXI.Container();
+
 	//container.anchor.x = 0.5;
 	//container.anchor.y = 0.5;
 	// Generate a random number and position and type of lasers
+
+	var container = new PIXI.Container();
 	var amount = Math.floor(Math.random() * 3);
 	
 	for(i=0; i < amount; i++){
@@ -214,15 +254,19 @@ function generateObstacles(centerX, centerY) {
 		
 	}
 	stage.children[1].children[3].addChild(container);
+
+
 }
 
 // Cycles through each obstacle and moves based on the amount given
 function moveObstacles(amount) {
+
 	
 	for(i = 0; i < stage.children[1].children[3].children.length; i++) {
 		stage.children[1].children[3].children[i].x -= amount;
 		
 		if(stage.children[1].children[3].children[i].x + 400 <= 0) {
+
 			// remove container from game view and destroy its children (ie the sprite)
 			var toDestroy = stage.children[1].children[3].removeChildAt(i);
 			toDestroy.destroy(true);
@@ -231,11 +275,17 @@ function moveObstacles(amount) {
 }
 
 // Cycles through each object and checks for collison
-function checkCollisonObjects() {
+function checkCollison() {
 	var playerX = player.position.x;
 	var playerY = player.position.y;
-	
-	//stage.children[1].children[1]
+	for(i = objectsStart; i < stage.children[2].children.length; i++) {
+		if(stage.children[2].children[i].x <= playerX + 62.5 && stage.children[2].children[i].x >= playerX - 62.5) {
+			if(stage.children[2].children[i].y <= playerY + 62.5 && stage.children[2].children[i].y >= playerY - 62.5) {
+				// Collsion results?
+			}
+		}
+		
+	}
 }
 
 
@@ -274,6 +324,8 @@ function die() {
 	
 }
 
+var game_on = false;
+var p_collission = false; // collision for platforms
 
 function animate(){
 
@@ -285,6 +337,7 @@ function animate(){
 
 		if (platform_2.on) platform_2.update(speed);
 		if (platform_1.on) platform_1.update(speed);
+
 
 		if(distance_from_last >= 200){
 			if(!(platform_1.on)){
@@ -306,12 +359,28 @@ function animate(){
 			}
 		}
 
+
 	}
+
+
+	
+	if(game_on && platform_1.on){
+		if(platform_1.segments[0].x < player.x){ // the first platform has been created and passed where the play is
+			p_collission = true;
+		}
+	
+		if(p_collission){ // the initial creation of segments that were not an actual platform object have been removed from the screen
+			collisionPlatform();
+		}
+	}
+
 
 
 
 	distance_from_last += speed;
 	renderer.render(stage);
+
 }
+
 
 animate();
