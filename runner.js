@@ -36,8 +36,7 @@ game_view.interactive = false;
 title_view.visible = true;
 title_view.interactive = true;
 
-title_view.alpha = 70;
-
+var laserTextures = [];
 
 var player = {};
 player.jumping = false;
@@ -52,23 +51,6 @@ var speed = 3; // The overall scaling of the game speed
 var game_on = false;
 
 var fall_speed = 5;
-
-var p_collission = false; // collision for platforms
-
-
-
-first_run = true;
-
-var platform_texture;
-
-var platform_distance = 200;
-var distance_from_last = -100;
-var last_y = 475;
-
-var platform_1 = {};
-var platform_2 = {};
-
-
 
 player.runningFrames;
 //player.runner;
@@ -86,7 +68,6 @@ function loadMenus(){
 	title_view.addChild(title_screen);
 	title_screen.interactive = true;
 	title_screen.on('mousedown', changeView.bind(null, game_view));
-	title_screen.on('mousedown', firstRun);
 	//title_screen.on('mousedown', firstRun);
 }
 
@@ -94,13 +75,15 @@ function loadMenus(){
 
 PIXI.loader
 	.add('./scroller_assets/platform_assets/platform_assets.json')
-	//.add('./entity_assets/entity_assets.json')
+	.add('./obstacle_assets/laser.json')
 	.add("running.json") // runing player
 	.load(loadGame);
 
 
 function loadGame(){
 
+
+	first_run = true;
 
 
 	player.runningFrames = [];
@@ -115,14 +98,17 @@ function loadGame(){
 	player.position.x = 120;
 	player.position.y = 400;
 	player.play();
+	
+	// laserz
+	for(var a=1; a<=11; a++) {
+		laserTextures.push(PIXI.Texture.fromFrame('laser_trap_air_'+a+'.png'));
+	}
 
 
-
-
-	platform_texture = PIXI.Texture.fromFrame('mid_0.png');
+	var platform_texture = PIXI.Texture.fromFrame('mid_0.png');
 	
 
-	for(var k = 0; k <= game_width + 240; k += 120){
+	for(var k = 0; k <= game_width + 120; k += 120){
 
 		var platformk = new PIXI.Sprite(platform_texture);
 		platforms.addChild(platformk);
@@ -135,7 +121,7 @@ function loadGame(){
 		first_platforms.push(platformk);
 
 	}
-	
+	firstRun();
 }
 
 
@@ -160,70 +146,7 @@ window.addEventListener('keydown', function(e){
 
 });
  
-function reset(){
 
-
-	for(var i = 0; i < stage.children.length-1; i++){
-		stage.removeChildAt(i);
-	}
-
-	game_view = new PIXI.Container();
-	stage.addChild(game_view);
-
-	title_view = new PIXI.Container();
-	stage.addChild(title_view);
-
-	scroller = new Scroller(game_view);
-
-	platforms = new PIXI.Container();
-	game_view.addChild(platforms);
-
-	obstacles = new PIXI.Container();
-	game_view.addChild(obstacles);
-
-	game_view.visible = true;
-	game_view.interactive = false;
-
-
-	title_view.visible = true;
-	title_view.interactive = true;
-
-	title_view.alpha = 70;
-
-
-	player = {};
-	player.jumping = false;
-
-
-	first_run = true;
-
-	first_platforms = [];
-
-	speed = 3; // The overall scaling of the game speed
-
-	game_on = false;
-
-	fall_speed = 5;
-
-	game_on = false;
-
-	p_collission = false; // collision for platforms
-
-	platform_distance = 200;
-
-	player.runningFrames;
-
-	distance_from_last = 0;
-	last_y = 475;
-
-	platform_1 = {};
-	platform_2 = {};
-
-
-	//player.runner;
-	loadMenus();
-	loadGame();
-}
 
 function jump(){
 	player.jumping = true;
@@ -264,9 +187,7 @@ function jump(){
 function fall(){ 
 	// check if player is jumping
 	if (!player.jumping){	
-
 		player.y += fall_speed;
-
 	}
 }
 
@@ -288,13 +209,13 @@ function collisionPlatform(){// platform x = 1, y = 0 = top right //player x = .
 	if(p_collission){
 	
 	if(platform_1.on && player.x > (platform_1.segments[0].x-120) && player.x < platform_1.segments[platform_1.segments.length-1].x){ // player inside edges of platform (mult by 120 to get pixels)
-		if (player.y < platform_1.height || player.y > (platform_1.height + 70)){ // player is above/ below the platform	
+		if (player.y < platform_1.height + 40 || player.y > (platform_1.height + 70)){ // player is above/ below the platform	
 			fall(); // fall() checks if the player is jumping
 		}
 	}
 
 	else if(platform_2.on && player.x > (platform_2.segments[0].x-120) && player.x < platform_2.segments[platform_2.segments.length-1].x){ // player inside edges of platform (mult by 120 to get pixels)
-		if (player.y < platform_2.height || player.y > (platform_2.height + 70)){ // player is above/ below the platform
+		if (player.y < platform_2.height + 40 || player.y > (platform_2.height + 70)){ // player is above/ below the platform
 			fall();
 		}
 	}
@@ -308,7 +229,6 @@ function collisionPlatform(){// platform x = 1, y = 0 = top right //player x = .
 		}
 	}
 }
-
 
 
 //
@@ -343,30 +263,25 @@ function generateObstacles(centerX, centerY) {
 	// so using floor the top range has to be one more then what you want
 	
 	for(i=0; i < amount; i++){
-		var laserType = Math.floor(Math.random() * (3 -1) + 1);
-		var laser_texture = PIXI.Texture.fromImage('laser_trap_air_'+laserType+'.png');
+		var laser = new PIXI.extras.MovieClip(laserTextures);
+		
 		var laserDeltaX = Math.floor(Math.random() * 400) - 200;
 		var laserDeltaY = Math.floor(Math.random() * 100) - 50;
 		
-		var trap = new PIXI.extras.MovieClip([laser_texture, laser_texture]);
-		trap.on('mousedown',turnLasersOff);
+		laser.anchor.x = 0.5;
+		laser.anchor.y = 0.5;
+		
+		laser.position.x = centerX + laserDeltaX;
+		laser.position.y = centerY + laserDeltaY - 100;
+		
+		laser.animationSpeed = .25;
+		laser.loop = true;
+		laser.play();
 
-		trap.position.x = centerX + laserDeltaX;
-		trap.position.y = centerY + laserDeltaY - 100;
-
-		trap.animationSpeed = .1;
-
-		trap.play();
-
-		container.addChild(trap);	
+		container.addChild(laser);	
 		
 	}
 	obstacles.addChild(container);
-}
-
-
-function turnLasersOff(){
-
 }
   
 // Cycles through each obstacle and moves based on the amount given
@@ -403,8 +318,8 @@ function checkCollison() {
 
 function firstRun(){
 
-		
-		first_platforms[first_platforms.length-1].visible = false;
+		game_on = true;
+	
 		for(var m = 0; m < first_platforms.length; m++){
 
 			first_platforms[m].position.x -= speed;
@@ -417,13 +332,14 @@ function firstRun(){
 		if(first_platforms[first_platforms.length-1].position.x > -120){
 			requestAnimationFrame(firstRun);
 		}
-
-		game_on = true;
 	
 }
 
+var distance_from_last = -100;
+var last_y = 475;
 
-
+var platform_1 = {};
+var platform_2 = {};
 
 
 
@@ -434,6 +350,9 @@ function die() {
 	
 }
 
+var game_on = true;
+var p_collission = false; // collision for platforms
+var platform_distance = 200;
 
 function animate(){
 
@@ -448,14 +367,15 @@ function animate(){
 			if (platform_1.on){
 				platform_1.update(speed);
 
-				if(platform_1.segments[0].x < player.x + 300){ // the first platform has been created and passed where the play is
+				if(platform_1.segments[0].x < player.x + 250){ // the first platform has been created and passed where the play is
 					p_collission = true;
 				}
 			}
-				// the initial creation of segments that were not an actual platform object have been removed from the screen
-			
-			collisionPlatform();
+		
 
+		
+			collisionPlatform();
+			
 
 
 			if(distance_from_last >= platform_distance){
@@ -479,23 +399,11 @@ function animate(){
 			}
 
 			distance_from_last += speed;
-
 			//platform_distance += speed;
-
 			speed += .001;
 	}
 
-	else{
 
-		for(var k = 0; k < platforms.children.length-1; k++){
-		 
-		 		platforms.children[k].position.x -= 4;
-		 
-		 		if (platforms.children[k].position.x == -120){
-		 			platforms.children[k].position.x = game_width + 120;
-		 		}
-		 	}
-	}
 	
 	renderer.render(stage);
 
