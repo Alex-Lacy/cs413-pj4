@@ -188,7 +188,11 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
+            <key type="filename">credits.png</key>
+            <key type="filename">death.png</key>
+            <key type="filename">play_again.png</key>
             <key type="filename">title_screen.png</key>
+            <key type="filename">you_died.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -197,6 +201,10 @@
         <key>fileList</key>
         <array>
             <filename>title_screen.png</filename>
+            <filename>you_died.png</filename>
+            <filename>credits.png</filename>
+            <filename>death.png</filename>
+            <filename>play_again.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

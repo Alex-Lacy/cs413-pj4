@@ -29,9 +29,14 @@ game_view.addChild(platforms);
 var obstacles = new PIXI.Container();
 game_view.addChild(obstacles);
 
+var death_view = new PIXI.Container();
+stage.addChild(death_view);
+
+death_view.visible = false;
+death_view.interactive = false;
+
 game_view.visible = true;
 game_view.interactive = false;
-
 
 title_view.visible = true;
 title_view.interactive = true;
@@ -55,6 +60,8 @@ var game_on = false;
 var fall_speed = 5;
 
 var p_collission = false; // collision for platforms
+
+var score = 0;
 
 var platform_texture;
 
@@ -81,12 +88,41 @@ PIXI.loader
 
 function loadMenus(){
 
-	var title_screen = new PIXI.Sprite(PIXI.Texture.fromImage('menu_assets/title_screen.png'));
+	var title_screen = new PIXI.Sprite(PIXI.Texture.fromFrame('title_screen.png'));
 	title_view.addChild(title_screen);
 	title_screen.interactive = true;
 	title_screen.on('mousedown', changeView.bind(null, game_view));
 	title_screen.on('mousedown', function(){game_on = true;});
 	title_screen.on('mousedown', firstRun);
+
+
+
+	var death_bg = new PIXI.Sprite(PIXI.Texture.fromFrame('death.png'));
+	death_view.addChild(death_bg);
+	
+
+	var you_died = new PIXI.Sprite(PIXI.Texture.fromFrame('you_died.png'));
+	death_view.addChild(you_died);
+	you_died.position.x = 120;
+	you_died.position.y = 90;
+	you_died.scale.x = 1.1;
+	you_died.scale.y = 1.1;
+
+
+	var play_again = new PIXI.Sprite(PIXI.Texture.fromFrame('play_again.png'));
+	death_view.addChild(play_again);
+	play_again.position.x = 60;
+	play_again.position.y = 250;
+	play_again.interactive = true;
+	play_again.on('mousedown', reset);
+
+
+	var credits = new PIXI.Sprite(PIXI.Texture.fromFrame('credits.png'));
+	death_view.addChild(credits);
+	credits.position.x = 420;
+	credits.position.y = 380;
+
+
 
 
 	//title_screen.on('mousedown', firstRun);
@@ -164,7 +200,7 @@ window.addEventListener('keydown', function(e){
 		else if (e.keyCode == 32)
 			
 			// check if player is on one of the platforms
-			console.log(player.y);
+			
 			if(!player.jumping && p_collission){
 				if(platform_1.on && player.x > (platform_1.segments[0].x-120) && player.x < platform_1.segments[platform_1.segments.length-1].x){// check if player is in x bounds of platform_1
 					if(player.y >= platform_1.height + 40 && player.y <= (platform_1.height + 70)){// check y bounds
@@ -206,6 +242,12 @@ function reset(){
 	obstacles = new PIXI.Container();
 	game_view.addChild(obstacles);
 
+	death_view = new PIXI.Container();
+	stage.addChild(death_view);
+
+	death_view.visible = false;
+	death_view.interactive = false;
+
 	game_view.visible = true;
 	game_view.interactive = false;
 
@@ -236,7 +278,7 @@ function reset(){
 
 	platform_distance = 200;
 
-	player.runningFrames;
+	score = 0;
 
 	distance_from_last = -50;
 	last_y = 475;
@@ -445,10 +487,6 @@ function firstRun(){
 				platforms.removeChild(first_platforms[m]);
 				first_platforms.splice(m, 1);
 
-				if(platform_1.on){
-					console.log(platform_1);
-					console.log(first_platforms[0]);
-				}
 			}
 		}
 
@@ -479,6 +517,8 @@ function firstRun(){
 // Called when player collides with something or falls
 function die() {
 	
+	changeView(death_view);
+	game_view.visible = true;
 }
 
 
@@ -533,6 +573,8 @@ function animate(){
 			//platform_distance += speed;
 
 			speed += .001;
+			score += 100 * speed;
+			player.animationSpeed += speed/100000;
 	}
 
 	else{
