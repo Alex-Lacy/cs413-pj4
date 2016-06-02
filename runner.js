@@ -56,12 +56,10 @@ var fall_speed = 5;
 
 var p_collission = false; // collision for platforms
 
-first_run = true;
-
 var platform_texture;
 
 
-var distance_from_last = -100;
+var distance_from_last = -50;
 var platform_distance = 200;
 
 var last_y = 475;
@@ -87,7 +85,10 @@ function loadMenus(){
 	title_view.addChild(title_screen);
 	title_screen.interactive = true;
 	title_screen.on('mousedown', changeView.bind(null, game_view));
+	title_screen.on('mousedown', function(){game_on = true;});
 	title_screen.on('mousedown', firstRun);
+
+
 	//title_screen.on('mousedown', firstRun);
 }
 
@@ -237,12 +238,11 @@ function reset(){
 
 	player.runningFrames;
 
-	distance_from_last = -100;
+	distance_from_last = -50;
 	last_y = 475;
 
 	platform_1 = {};
 	platform_2 = {};
-
 
 	//player.runner;
 	loadMenus();
@@ -432,22 +432,41 @@ function checkCollison() {
 function firstRun(){
 
 		
-		first_platforms[first_platforms.length-1].visible = false;
-		for(var m = 0; m < first_platforms.length; m++){
+		if(!(game_on)) return;
+
+		//first_platforms[first_platforms.length-1].visible = false;
+		for(var m = 0; m < first_platforms.length-1; m++){
+
 
 			first_platforms[m].position.x -= speed;
 
-			if(first_platforms[first_platforms.length-1].position.x <= -120){
+
+			if(first_platforms[m].position.x <= -120){
 				platforms.removeChild(first_platforms[m]);
+				first_platforms.splice(m, 1);
+
+				if(platform_1.on){
+					console.log(platform_1);
+					console.log(first_platforms[0]);
+				}
 			}
 		}
 
-		if(first_platforms[first_platforms.length-1].position.x > -120){
+
+
+			
+
+		if (first_platforms.length == 0){
+			first_run = false;
+
+		}
+
+		else{
 			requestAnimationFrame(firstRun);
 		}
 
-		game_on = true;
-	
+
+			
 }
 
 
@@ -496,6 +515,7 @@ function animate(){
 					last_y = platform_1.height;
 					distance_from_last = -(platform_1.width*120);
 
+
 				}
 
 				else if(!(platform_2.on)){
@@ -519,8 +539,8 @@ function animate(){
 
 		for(var k = 0; k < platforms.children.length-1; k++){
 		 
-		 		platforms.children[k].position.x -= 4;
-		 
+		 		platforms.children[k].position.x -= speed;
+		 		
 		 		if (platforms.children[k].position.x == -120){
 		 			platforms.children[k].position.x = game_width + 120;
 		 		}
