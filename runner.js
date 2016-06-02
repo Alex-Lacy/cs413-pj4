@@ -546,6 +546,7 @@ function die() {
 	
 	changeView(death_view);
 	game_view.visible = true;
+	var player_score = score;
 }
 
 
