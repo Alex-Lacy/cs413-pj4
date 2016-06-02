@@ -146,10 +146,11 @@ window.addEventListener('keydown', function(e){
 
 function jump(){
 	player.jumping = true;
-	var jump_time = 700;
+	var jump_time = 600 - speed;
+	var jump_height = 160 + speed;
 	
 	// change player position
-	createjs.Tween.get(player.position).to({y: (player.y - 200)}, jump_time); // tween the player to the max height, then let fall() do the rest
+	createjs.Tween.get(player.position).to({y: (player.y - jump_height)}, jump_time); // tween the player to the max height, then let fall() do the rest
 	window.setTimeout(function () { player.jumping = false; }, jump_time);
 	
 	//player.y -= 100;
@@ -394,6 +395,7 @@ function animate(){
 			}
 
 			distance_from_last += speed;
+			speed += .001;
 	}
 
 
