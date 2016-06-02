@@ -50,6 +50,8 @@ var speed = 3; // The overall scaling of the game speed
 
 var game_on = false;
 
+var fall_speed = 5;
+
 player.runningFrames;
 //player.runner;
 
@@ -183,7 +185,7 @@ function jump(){
 function fall(){ 
 	// check if player is jumping
 	if (!player.jumping){	
-		player.y += 10;
+		player.y += fall_speed;
 	}
 }
 
@@ -265,8 +267,9 @@ function generateObstacles(centerX, centerY) {
 		var trap = new PIXI.extras.MovieClip([laser_texture, laser_texture]);
 
 		trap.position.x = centerX + laserDeltaX;
-		trap.position.y = centerY - 250;// - laserDeltaY;
-		trap.animationSpeed = .1;
+		trap.position.y = centerY - 250 - laserDeltaY;
+		console.log(centerY);
+		trap.animationSpeed = speed;
 		trap.play();
 
 		container.addChild(trap);
@@ -287,7 +290,7 @@ function moveObstacles(amount) {
 
 		obstacles.children[j].position.x -= speed;
 
-		if(obstacles.children[j].position.x + game_width * 2 <= 0){
+		if(obstacles.children[j].position.x + game_width * game_width <= 0){
 			obstacles.removeChildAt(j);
 			
 		}
@@ -348,6 +351,7 @@ function die() {
 
 var game_on = false;
 var p_collission = false; // collision for platforms
+var platform_distance = 200;
 
 function animate(){
 
@@ -374,7 +378,7 @@ function animate(){
 			}
 
 
-			if(distance_from_last >= 200){
+			if(distance_from_last >= platform_distance){
 				if(!(platform_1.on)){
 					
 					platform_1 = new Platform(last_y, platforms);
@@ -395,6 +399,7 @@ function animate(){
 			}
 
 			distance_from_last += speed;
+			//platform_distance += speed;
 			speed += .001;
 	}
 
