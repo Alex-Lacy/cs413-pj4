@@ -36,8 +36,6 @@ game_view.interactive = false;
 title_view.visible = true;
 title_view.interactive = true;
 
-title_view.alpha = 70;
-
 
 var player = {};
 player.jumping = false;
@@ -154,8 +152,25 @@ window.addEventListener('keydown', function(e){
 		if(e.repeat || !player || player.jumping)
 			return;
 		else if (e.keyCode == 32)
-			jump();
 			
+			// check if player is on one of the platforms
+			console.log(player.y);
+			if(!player.jumping && p_collission){
+				if(platform_1.on && player.x > (platform_1.segments[0].x-120) && player.x < platform_1.segments[platform_1.segments.length-1].x){// check if player is in x bounds of platform_1
+					if(player.y >= platform_1.height + 40 && player.y <= (platform_1.height + 70)){// check y bounds
+						jump();
+					}
+				}
+				else if(platform_2.on && player.x > (platform_2.segments[0].x-120) && player.x < platform_2.segments[platform_2.segments.length-1].x){// check if player is in x bounds of platform_2
+					if(player.y >= platform_2.height + 40 && player.y <= (platform_2.height + 70)){// check y bounds
+						jump();
+					}
+				}
+			}// end platform_1 / platform_2 check
+
+			
+			// check if player is on the beginning segment
+			if(!p_collission && player.y >= 420) jump();
 	}
 
 });
@@ -264,9 +279,7 @@ function jump(){
 function fall(){ 
 	// check if player is jumping
 	if (!player.jumping){	
-
 		player.y += fall_speed;
-
 	}
 }
 
@@ -287,14 +300,14 @@ function offScreen(){
 function collisionPlatform(){// platform x = 1, y = 0 = top right //player x = .5, y= 1 = feet
 	if(p_collission){
 	
-	if(platform_1.on && player.x > (platform_1.segments[0].x-120) && player.x < platform_1.segments[platform_1.segments.length-1].x){ // player inside edges of platform (mult by 120 to get pixels)
-		if (player.y < platform_1.height || player.y > (platform_1.height + 70)){ // player is above/ below the platform	
+	if(platform_1.on && player.x > (platform_1.segments[0].x-120) && player.x < (platform_1.segments[platform_1.segments.length-1].x + 20)){ // player inside edges of platform (mult by 120 to get pixels)
+		if (player.y < platform_1.height + 40 || player.y > (platform_1.height + 70)){ // player is above/ below the platform	
 			fall(); // fall() checks if the player is jumping
 		}
 	}
 
-	else if(platform_2.on && player.x > (platform_2.segments[0].x-120) && player.x < platform_2.segments[platform_2.segments.length-1].x){ // player inside edges of platform (mult by 120 to get pixels)
-		if (player.y < platform_2.height || player.y > (platform_2.height + 70)){ // player is above/ below the platform
+	else if(platform_2.on && player.x > (platform_2.segments[0].x-120) && player.x < (platform_2.segments[platform_2.segments.length-1].x +20)){ // player inside edges of platform (mult by 120 to get pixels)
+		if (player.y < platform_2.height + 40 || player.y > (platform_2.height + 70)){ // player is above/ below the platform
 			fall();
 		}
 	}
@@ -308,7 +321,6 @@ function collisionPlatform(){// platform x = 1, y = 0 = top right //player x = .
 		}
 	}
 }
-
 
 
 //
@@ -349,7 +361,6 @@ function generateObstacles(centerX, centerY) {
 		var laserDeltaY = Math.floor(Math.random() * 100) - 50;
 		
 		var trap = new PIXI.extras.MovieClip([laser_texture, laser_texture]);
-		trap.on('mousedown',turnLasersOff);
 
 		trap.position.x = centerX + laserDeltaX;
 		trap.position.y = centerY + laserDeltaY - 100;
@@ -364,10 +375,10 @@ function generateObstacles(centerX, centerY) {
 	obstacles.addChild(container);
 }
 
-
 function turnLasersOff(){
 
 }
+
   
 // Cycles through each obstacle and moves based on the amount given
 function moveObstacles(amount) {
@@ -448,14 +459,15 @@ function animate(){
 			if (platform_1.on){
 				platform_1.update(speed);
 
-				if(platform_1.segments[0].x < player.x + 300){ // the first platform has been created and passed where the play is
+				if(platform_1.segments[0].x < player.x + 232){ // the first platform has been created and passed where the play is
 					p_collission = true;
 				}
 			}
-				// the initial creation of segments that were not an actual platform object have been removed from the screen
-			
-			collisionPlatform();
+		
 
+		
+			collisionPlatform();
+			
 
 
 			if(distance_from_last >= platform_distance){
@@ -471,7 +483,7 @@ function animate(){
 				else if(!(platform_2.on)){
 					
 					platform_2 = new Platform(last_y, platforms);
-					generateObstacles(platformgit2.segments[Math.floor(platform_2.segments.length/2)].position.x, platform_2.height);
+					generateObstacles(platform_2.segments[Math.floor(platform_2.segments.length/2)].position.x, platform_2.height);
 					last_y = platform_2.height;			
 					distance_from_last = -(platform_2.width*120);
 
@@ -479,9 +491,7 @@ function animate(){
 			}
 
 			distance_from_last += speed;
-
 			//platform_distance += speed;
-
 			speed += .001;
 	}
 
