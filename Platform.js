@@ -5,7 +5,7 @@ function Platform(previous_y, stage){
 	this.last_y = previous_y;
 	this.texture = PIXI.Texture.fromImage('mid_0.png');
 
-	this.width = Math.random() * (8 - 4) + 4;
+	this.width = Math.random() * (15 - 4) + 4;
 	this.height = Math.random() * ((previous_y - 50) - 400) + (400);// a random number between prev_y+100 and prev_y-100
 	if(this.height >= 480){
 		this.height = 450;
