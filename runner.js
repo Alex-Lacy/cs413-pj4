@@ -379,7 +379,7 @@ function animate(){
 			if (platform_1.on){
 				platform_1.update(speed);
 
-				if(platform_1.segments[0].x < player.x + 270){ // the first platform has been created and passed where the play is
+				if(platform_1.segments[0].x < player.x + 232){ // the first platform has been created and passed where the play is
 					p_collission = true;
 				}
 			}
