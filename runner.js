@@ -205,13 +205,13 @@ function collisionPlatform(){// platform x = 1, y = 0 = top right //player x = .
 	if(p_collission){
 	
 	if(platform_1.on && player.x > (platform_1.segments[0].x-120) && player.x < platform_1.segments[platform_1.segments.length-1].x){ // player inside edges of platform (mult by 120 to get pixels)
-		if (player.y < platform_1.height || player.y > (platform_1.height + 70)){ // player is above/ below the platform	
+		if (player.y < platform_1.height + 40 || player.y > (platform_1.height + 70)){ // player is above/ below the platform	
 			fall(); // fall() checks if the player is jumping
 		}
 	}
 
 	else if(platform_2.on && player.x > (platform_2.segments[0].x-120) && player.x < platform_2.segments[platform_2.segments.length-1].x){ // player inside edges of platform (mult by 120 to get pixels)
-		if (player.y < platform_2.height || player.y > (platform_2.height + 70)){ // player is above/ below the platform
+		if (player.y < platform_2.height + 40 || player.y > (platform_2.height + 70)){ // player is above/ below the platform
 			fall();
 		}
 	}
