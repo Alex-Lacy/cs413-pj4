@@ -36,6 +36,7 @@ game_view.interactive = false;
 title_view.visible = true;
 title_view.interactive = true;
 
+var laserTextures = [];
 
 var player = {};
 player.jumping = false;
@@ -74,7 +75,7 @@ function loadMenus(){
 
 PIXI.loader
 	.add('./scroller_assets/platform_assets/platform_assets.json')
-	//.add('./entity_assets/entity_assets.json')
+	.add('./obstacle_assets/laser.json')
 	.add("running.json") // runing player
 	.load(loadGame);
 
@@ -97,8 +98,11 @@ function loadGame(){
 	player.position.x = 120;
 	player.position.y = 400;
 	player.play();
-
-
+	
+	// laserz
+	for(var a=1; a<=11; a++) {
+		laserTextures.push(PIXI.Texture.fromFrame('laser_trap_air_'+a+'.png'));
+	}
 
 
 	var platform_texture = PIXI.Texture.fromFrame('mid_0.png');
@@ -259,21 +263,22 @@ function generateObstacles(centerX, centerY) {
 	// so using floor the top range has to be one more then what you want
 	
 	for(i=0; i < amount; i++){
-		var laserType = Math.floor(Math.random() * (3 -1) + 1);
-		var laser_texture = PIXI.Texture.fromImage('laser_trap_air_'+laserType+'.png');
+		var laser = new PIXI.extras.MovieClip(laserTextures);
+		
 		var laserDeltaX = Math.floor(Math.random() * 400) - 200;
 		var laserDeltaY = Math.floor(Math.random() * 100) - 50;
 		
-		var trap = new PIXI.extras.MovieClip([laser_texture, laser_texture]);
+		laser.anchor.x = 0.5;
+		laser.anchor.y = 0.5;
+		
+		laser.position.x = centerX + laserDeltaX;
+		laser.position.y = centerY + laserDeltaY - 100;
+		
+		laser.animationSpeed = .25;
+		laser.loop = true;
+		laser.play();
 
-		trap.position.x = centerX + laserDeltaX;
-		trap.position.y = centerY + laserDeltaY - 100;
-
-		trap.animationSpeed = .1;
-
-		trap.play();
-
-		container.addChild(trap);	
+		container.addChild(laser);	
 		
 	}
 	obstacles.addChild(container);
