@@ -202,6 +202,8 @@ function offScreen(){
 
 
 function collisionPlatform(){// platform x = 1, y = 0 = top right //player x = .5, y= 1 = feet
+	if(p_collission){
+	
 	if(platform_1.on && player.x > (platform_1.segments[0].x-120) && player.x < platform_1.segments[platform_1.segments.length-1].x){ // player inside edges of platform (mult by 120 to get pixels)
 		if (player.y < platform_1.height || player.y > (platform_1.height + 70)){ // player is above/ below the platform	
 			fall(); // fall() checks if the player is jumping
@@ -216,8 +218,13 @@ function collisionPlatform(){// platform x = 1, y = 0 = top right //player x = .
 	
 	// check if player is jumping
 	else fall();
+	}
+	else{ // player is in the first run bit of platform (the neverending platform)
+		if(player.y < 420){
+			fall();
+		}
+	}
 }
-
 
 
 //
@@ -355,16 +362,15 @@ function animate(){
 			if (platform_1.on){
 				platform_1.update(speed);
 
-				if(platform_1.segments[0].x < player.x){ // the first platform has been created and passed where the play is
+				if(platform_1.segments[0].x < player.x + 250){ // the first platform has been created and passed where the play is
 					p_collission = true;
 				}
 			}
 		
 
 		
-			if(p_collission){ // the initial creation of segments that were not an actual platform object have been removed from the screen
-				collisionPlatform();
-			}
+			collisionPlatform();
+			
 
 
 			if(distance_from_last >= platform_distance){
