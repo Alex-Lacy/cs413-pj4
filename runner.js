@@ -94,6 +94,7 @@ PIXI.loader
 	.add("select.wav")
 	.add("fall_death.wav")
 	.add("laser_death.wav")
+	.add("laser_off.wav")
 	.add("jump.wav")
 	.add("proj_4_theme.wav")
 	.load(soundFnc);
@@ -103,6 +104,7 @@ function soundFnc(){// loads the sounds, sets the theme to loop
 	select_sound = PIXI.audioManager.getAudio("select.wav");
 	fall_death_sound = PIXI.audioManager.getAudio("fall_death.wav");
 	laser_death_sound = PIXI.audioManager.getAudio("laser_death.wav");
+	laser_off_sound = PIXI.audioManager.getAudio("laser_off.wav");
 	game_theme = PIXI.audioManager.getAudio("proj_4_theme.wav");
 	jump_sound = PIXI.audioManager.getAudio("jump.wav");
 	
