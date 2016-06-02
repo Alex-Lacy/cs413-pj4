@@ -16,11 +16,11 @@ stage.scale.x = game_scale;
 stage.scale.y = game_scale;
 
 
-var title_view = new PIXI.Container();
-stage.addChild(title_view);
-
 var game_view = new PIXI.Container();
 stage.addChild(game_view);
+
+var title_view = new PIXI.Container();
+stage.addChild(title_view);
 
 var scroller = new Scroller(game_view);
 
@@ -30,12 +30,14 @@ game_view.addChild(platforms);
 var obstacles = new PIXI.Container();
 game_view.addChild(obstacles);
 
-game_view.visible = false;
+game_view.visible = true;
 game_view.interactive = false;
 
 
 title_view.visible = true;
 title_view.interactive = true;
+
+title_view.alpha = 70;
 
 
 var player = {};
@@ -137,7 +139,7 @@ window.addEventListener('keydown', function(e){
 			return;
 		else if (e.keyCode == 32)
 			jump();
-			player.jumping = false;
+			
 	}
 
 });
@@ -146,9 +148,13 @@ window.addEventListener('keydown', function(e){
 
 function jump(){
 	player.jumping = true;
+	var jump_time = 600 - speed;
+	var jump_height = 160 + speed;
 	
 	// change player position
-	createjs.Tween.get(player.position).to({y: (player.y - 100)}, 700); // tween the player to the max height, then let fall() do the rest
+	createjs.Tween.get(player.position).to({y: (player.y - jump_height)}, jump_time); // tween the player to the max height, then let fall() do the rest
+	window.setTimeout(function () { player.jumping = false; }, jump_time);
+	
 	//player.y -= 100;
 	
 	// set player.jumping back to false
@@ -198,6 +204,8 @@ function offScreen(){
 
 
 function collisionPlatform(){// platform x = 1, y = 0 = top right //player x = .5, y= 1 = feet
+	if(p_collission){
+	
 	if(platform_1.on && player.x > (platform_1.segments[0].x-120) && player.x < platform_1.segments[platform_1.segments.length-1].x){ // player inside edges of platform (mult by 120 to get pixels)
 		if (player.y < platform_1.height || player.y > (platform_1.height + 70)){ // player is above/ below the platform	
 			fall(); // fall() checks if the player is jumping
@@ -212,6 +220,12 @@ function collisionPlatform(){// platform x = 1, y = 0 = top right //player x = .
 	
 	// check if player is jumping
 	else fall();
+	}
+	else{ // player is in the first run bit of platform (the neverending platform)
+		if(player.y < 420){
+			fall();
+		}
+	}
 }
 
 
@@ -316,12 +330,12 @@ function firstRun(){
 
 			first_platforms[m].position.x -= speed;
 
-			if(first_platforms[first_platforms.length-1].position.x <= 0){
+			if(first_platforms[first_platforms.length-1].position.x <= -120){
 				platforms.removeChild(first_platforms[m]);
 			}
 		}
 
-		if(first_platforms[first_platforms.length-1].position.x > 0){
+		if(first_platforms[first_platforms.length-1].position.x > -120){
 			requestAnimationFrame(firstRun);
 		}
 	
@@ -358,16 +372,14 @@ function animate(){
 			if (platform_1.on){
 				platform_1.update(speed);
 
-				if(platform_1.segments[0].x < player.x){ // the first platform has been created and passed where the play is
+				if(platform_1.segments[0].x < player.x + 300){ // the first platform has been created and passed where the play is
 					p_collission = true;
 				}
 			}
-		
+				// the initial creation of segments that were not an actual platform object have been removed from the screen
+			
+			collisionPlatform();
 
-		
-			if(p_collission){ // the initial creation of segments that were not an actual platform object have been removed from the screen
-				collisionPlatform();
-			}
 
 
 			if(distance_from_last >= 200){
@@ -391,6 +403,7 @@ function animate(){
 			}
 
 			distance_from_last += speed;
+			speed += .001;
 	}
 
 
