@@ -15,12 +15,11 @@ var stage = new PIXI.Container();
 stage.scale.x = game_scale;
 stage.scale.y = game_scale;
 
+var game_view = new PIXI.Container();
+stage.addChild(game_view);
 
 var title_view = new PIXI.Container();
 stage.addChild(title_view);
-
-var game_view = new PIXI.Container();
-stage.addChild(game_view);
 
 var scroller = new Scroller(game_view);
 
@@ -30,7 +29,7 @@ game_view.addChild(platforms);
 var obstacles = new PIXI.Container();
 game_view.addChild(obstacles);
 
-game_view.visible = false;
+game_view.visible = true;
 game_view.interactive = false;
 
 
@@ -64,12 +63,11 @@ PIXI.loader
 
 function loadMenus(){
 
-	var title_screen = new PIXI.Sprite(PIXI.Texture.fromFrame('title_screen.png'));
+	var title_screen = new PIXI.Sprite(PIXI.Texture.fromImage('menu_assets/title_screen.png'));
 	title_view.addChild(title_screen);
 	title_screen.interactive = true;
 	title_screen.on('mousedown', changeView.bind(null, game_view));
-	title_screen.on('mousedown', firstRun);
-
+	//title_screen.on('mousedown', firstRun);
 }
 
 
@@ -119,7 +117,7 @@ function loadGame(){
 		first_platforms.push(platformk);
 
 	}
-
+	firstRun();
 }
 
 
@@ -245,14 +243,9 @@ function changeView(view){
 
 // As long as there is less then 3 objects generate a new set of object 
 // TODO: add other object groups
-var laser_texture = PIXI.Texture.fromImage('laser_trap_air_1.png');
 function generateObstacles(centerX, centerY) {
 	
-
-	//container.anchor.x = 0.5;
-	//container.anchor.y = 0.5;
 	// Generate a random number and position and type of lasers
-
 	var container = new PIXI.Container();
 	
 	var amount = Math.floor(Math.random() * (4 -1) + 1); // The top range in this formula for random is exclusive, 
@@ -260,32 +253,28 @@ function generateObstacles(centerX, centerY) {
 	
 	for(i=0; i < amount; i++){
 		var laserType = Math.floor(Math.random() * (3 -1) + 1);
-		
+		var laser_texture = PIXI.Texture.fromImage('laser_trap_air_'+laserType+'.png');
 		var laserDeltaX = Math.floor(Math.random() * 400) - 200;
-		var laserDeltaY = Math.floor(Math.random() * 200) - 100;
+		var laserDeltaY = Math.floor(Math.random() * 100) - 50;
 		
 		var trap = new PIXI.extras.MovieClip([laser_texture, laser_texture]);
 
 		trap.position.x = centerX + laserDeltaX;
-		trap.position.y = centerY - 250 - laserDeltaY;
-		console.log(centerY);
-		trap.animationSpeed = speed;
+		trap.position.y = centerY + laserDeltaY - 100;
+
+		trap.animationSpeed = .1;
+
 		trap.play();
 
-		container.addChild(trap);
-
-		
+		container.addChild(trap);	
 		
 	}
 	obstacles.addChild(container);
-
-
 }
   
 // Cycles through each obstacle and moves based on the amount given
 function moveObstacles(amount) {
 
-	
 	for(var j = 0; j < obstacles.children.length; j++){
 
 		obstacles.children[j].position.x -= speed;
@@ -303,13 +292,13 @@ function moveObstacles(amount) {
 function checkCollison() {
 	var playerX = player.position.x;
 	var playerY = player.position.y;
-	for(i = objectsStart; i < stage.children[2].children.length; i++) {
-		if(stage.children[2].children[i].x <= playerX + 62.5 && stage.children[2].children[i].x >= playerX - 62.5) {
-			if(stage.children[2].children[i].y <= playerY + 62.5 && stage.children[2].children[i].y >= playerY - 62.5) {
-				// Collsion results?
+	for(var j = 0; j < obstacles.children.length; j++){
+		if(obstacles.children[j].position.x <= playerX + 62.5 && obstacles.children[j].position.x >= playerX - 62.5) {
+			if(obstacles.children[j].position.y <= playerY + 62.5 && obstacles.children[j].position.y >= playerY - 62.5) {
+				die();
 			}
 		}
-		
+
 	}
 }
 
@@ -349,7 +338,7 @@ function die() {
 	
 }
 
-var game_on = false;
+var game_on = true;
 var p_collission = false; // collision for platforms
 var platform_distance = 200;
 
