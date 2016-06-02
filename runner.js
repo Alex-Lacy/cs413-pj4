@@ -55,14 +55,14 @@ var fall_speed = 5;
 
 var p_collission = false; // collision for platforms
 
-var platform_distance = 200;
+
 
 first_run = true;
 
 var platform_texture;
 
-
-var distance_from_last = 0;
+var platform_distance = 200;
+var distance_from_last = -100;
 var last_y = 475;
 
 var platform_1 = {};
@@ -471,7 +471,7 @@ function animate(){
 				else if(!(platform_2.on)){
 					
 					platform_2 = new Platform(last_y, platforms);
-					generateObstacles(platformgit2.segments[Math.floor(platform_2.segments.length/2)].position.x, platform_2.height);
+					generateObstacles(platform_2.segments[Math.floor(platform_2.segments.length/2)].position.x, platform_2.height);
 					last_y = platform_2.height;			
 					distance_from_last = -(platform_2.width*120);
 
