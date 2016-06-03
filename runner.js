@@ -124,7 +124,7 @@ function loadMenus(){
 	title_view.addChild(title_screen);
 	title_screen.interactive = true;
 	title_screen.on('mousedown', changeView.bind(null, game_view));
-	title_screen.on('mousedown', function(){game_on = true;});
+	title_screen.on('mousedown', function(){game_on = true; displayScore();});
 	title_screen.on('mousedown', firstRun);
 
 
@@ -252,7 +252,32 @@ window.addEventListener('keydown', function(e){
 	}
 
 });
- 
+
+
+var score_text;
+
+function displayScore(){
+	// string "score: "
+	score_text = new PIXI.Text('Score: 0',{font: '24px Arial', fill: 0xffffff, align : 'center'});
+	game_view.addChild(score_text);
+	score_text.anchor.x = .5;
+	score_text.x = game_width/2;
+	
+	// string timer
+	
+	
+	
+}
+
+function updateTimer(){
+	if(game_on){
+	score_text.text = 'Score: ' + Math.floor(speed);
+	}
+}
+
+
+setInterval(updateTimer, 1000);
+
 function reset(){
 
 
@@ -293,7 +318,11 @@ function reset(){
 	player = {};
 	player.jumping = false;
 
-
+	
+	
+	
+	
+	
 	first_run = true;
 
 	first_platforms = [];
@@ -395,7 +424,7 @@ function offScreen(){
 
 
 function collisionPlatform(){// platform x = 1, y = 0 = top right //player x = .5, y= 1 = feet
-	if(p_collission){
+	if(p_collission){// dynamic platform collision
 	
 
 	if(platform_1.on && player.x > (platform_1.segments[0].x-120) && player.x < (platform_1.segments[platform_1.segments.length-1].x + 20)){ // player inside edges of platform (mult by 120 to get pixels)
@@ -413,7 +442,8 @@ function collisionPlatform(){// platform x = 1, y = 0 = top right //player x = .
 	
 	// check if player is jumping
 	else fall();
-	}
+	} // end dynamic platform collision
+	
 	else{ // player is in the first run bit of platform (the neverending platform)
 		if(player.y < 420){
 			fall();
@@ -430,7 +460,7 @@ function collisionPlatform(){// platform x = 1, y = 0 = top right //player x = .
 // Currently this only works for switching between children of stage
 function changeView(view){
 
-	//blip.play();
+	select_sound.play();
 
 	for(var i=0; i<stage.children.length; i++){
 		stage.children[i].visible = false;
@@ -446,6 +476,9 @@ function changeView(view){
 // As long as there is less then 3 objects generate a new set of object 
 // TODO: add other object groups
 function generateObstacles(centerX, centerY) {
+	
+	// Generate a random number and position and type of lasers
+	var container = new PIXI.Container();
 	
 	var amount = Math.floor(Math.random() * (4 -1) + 1); // The top range in this formula for random is exclusive, 
 	// so using floor the top range has to be one more then what you want
@@ -464,34 +497,19 @@ function generateObstacles(centerX, centerY) {
 		
 		laser.animationSpeed = .25;
 		laser.loop = true;
-		laser.interactive = true;
-		laser.on('mousedown', turnLaserOff.bind(null, laser));
 		laser.play();
 
-		obstacles.addChild(laser);	
+		container.addChild(laser);	
 		
 	}
+	obstacles.addChild(container);
 }
 
-function turnLaserOff(laser){
-	var oldX = laser.x;
-	var oldY = laser.y;
-	
-	var newLaser = new PIXI.extras.MovieClip([laserTextures[0]]);
-	
-	newLaser.anchor.x = 0.5;
-	newLaser.anchor.y = 0.5;
-	
-	newLaser.position.x = oldX;
-	newLaser.position.y = oldY;
-	
-	newLaser.off = true;
-	newLaser.animationSpeed = .25;
-	newLaser.loop = true;
-	newLaser.play();
-	
-	obstacles.removeChild(laser);
-	obstacles.addChild(newLaser);	
+
+
+
+function turnLasersOff(){
+
 }
 
   
@@ -502,7 +520,7 @@ function moveObstacles(amount) {
 
 		obstacles.children[j].position.x -= speed;
 
-		if(obstacles.children[j].position.x <= 0){
+		if(obstacles.children[j].position.x + game_width * game_width <= 0){
 			obstacles.removeChildAt(j);
 			
 		}
@@ -511,17 +529,17 @@ function moveObstacles(amount) {
 
 }
 
-// Cycles through each object and checks0 for collison
+// Cycles through each object and checks for collison
 function checkCollison() {
 	var playerX = player.position.x;
 	var playerY = player.position.y;
 	for(var j = 0; j < obstacles.children.length; j++){
-		if(obstacles.children[j].off == true) {continue;}
-		if(playerX > obstacles.children[j].x -62.5 && playerX < obstacles.children[j].x + 62.5) {
-			if(playerY - 125 <= obstacles.children[j].y - 15 && playerY >= obstacles.children[j].y + 15) {
+		if(obstacles.children[j].position.x <= playerX + 62.5 && obstacles.children[j].position.x >= playerX - 62.5) {
+			if(obstacles.children[j].position.y <= playerY + 62.5 && obstacles.children[j].position.y >= playerY - 62.5) {
 				die();
 			}
 		}
+
 	}
 }
 
@@ -543,7 +561,7 @@ function firstRun(){
 				platforms.removeChild(first_platforms[m]);
 				first_platforms.splice(m, 1);
 				rightmost_index -= 1;
-				console.log(rightmost_index);
+				//console.log(rightmost_index);
 
 			}
 		}
@@ -584,12 +602,9 @@ function animate(){
 
 	requestAnimationFrame(animate);
 	scroller.update();
-	console.log(rightmost_index);
+	//console.log(rightmost_index);
 		if(game_on){
-			if (platform_1.on || platform_2.on) {
-				moveObstacles(speed);
-				checkCollison();
-			}
+			if (platform_1.on || platform_2.on) moveObstacles(speed);
 
 			if (platform_2.on) platform_2.update(speed);
 
