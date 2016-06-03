@@ -89,7 +89,6 @@ var runningFrames = [];
 //player.runner;
 var first_positioning = true;
 
-var score_text;
 var dead = false;
 
 
@@ -210,7 +209,7 @@ function loadGame(){
 		first_platforms.push(platformk);
 
 	}
-	
+ displayScore()
 }
 
 
@@ -256,7 +255,9 @@ window.addEventListener('keydown', function(e){
 function displayScore(){
 	// string "score: "
 	score_text = new PIXI.Text('Score: 0',{font: '24px Arial', fill: 0xffffff, align : 'center'});
+
 	game_view.addChild(score_text);
+	score_text.visible = false;
 	score_text.anchor.x = .5;
 	score_text.x = game_width/2;
 	
@@ -269,6 +270,7 @@ function displayScore(){
 function updateTimer(){
 	if(game_on){
 	score_text.text = 'Score: ' + Math.floor(speed);
+	score_text.visible = true;
 	}
 }
 
@@ -318,7 +320,7 @@ function reset(){
 
 	dead = false;
 
-
+	score_text = "Score: 0"
 	player = {};
 	player.jumping = false;
 	player.hasJumped = false;
@@ -431,15 +433,29 @@ function collisionPlatform(){// platform x = 1, y = 0 = top right //player x = .
 		if (player.y < platform_2.height + 40 || player.y > (platform_2.height + 70)){ // player is above/ below the platform
 			fall();
 		}
+		else {
+			
+			// Recreate player running animation and switch hasJumped to false
+			player.textures = runningFrames;
+			player.hasJumped = false;
+			player.play();
+		}
 	}
 	
 	// check if player is jumping
 	else fall();
-	}
+	}// Ends if(p_collission)
+
+
 	else{ // player is in the first run bit of platform (the neverending platform)
 		if(player.y < 420){
 			fall();
 		}
+
+		else{
+			// Steves landing stuff
+		}
+
 	}
 }
 
@@ -555,6 +571,8 @@ function firstRun(){
 		
 		if(!(game_on)) return;
 
+
+
 			if(first_positioning){
 				for(var k = 0; k <= game_width + 240; k += 120){
 					first_platforms[k / 120].position.x = k;
@@ -598,6 +616,7 @@ function die() {
 	
 	changeView(death_view);
 	game_view.visible = true;
+	player.visible = false;
 }
 
 
