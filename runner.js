@@ -297,7 +297,9 @@ function reset(){
 	speed = 3; // The overall scaling of the game speed
 
 	game_on = false;
-
+	
+	dead = false // variable for death sound
+	
 	fall_speed = 5;
 
 	game_on = false;
@@ -361,7 +363,9 @@ function fall(){
 	if (!player.jumping){	
 
 		player.y += fall_speed;
-
+		
+		// check if player falls of the map
+		offScreen();
 	}
 }
 
@@ -369,8 +373,15 @@ function fall(){
 // checks if player coords are off screen,
 // returns TRUE if the player is off screen
 // returns FALSE if the player is still on the screen
+
+var dead = false;
+
 function offScreen(){
-	
+	if(player.y - 120 > 500){
+		if(!dead) fall_death_sound.play();
+		die();
+		dead = true;
+	}
 }
 
 
@@ -548,7 +559,6 @@ function die() {
 	
 	changeView(death_view);
 	game_view.visible = true;
-	var player_score = score;
 }
 
 
