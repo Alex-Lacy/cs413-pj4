@@ -658,9 +658,9 @@ function checkCollison() {
 		if(obstacles.children[j].off == true) {continue;}
 		if(playerX > obstacles.children[j].x -62.5 && playerX < obstacles.children[j].x + 62.5) {
 			var boundDiff = 0;
-			if(obstacles.children[j].type == 0) {boundDiff = 25;}
-			if(obstacles.children[j].type == 1) {boundDiff = 50;}
-			if(obstacles.children[j].type == 2) {boundDiff = 75;}
+			if(obstacles.children[j].type == 0) {boundDiff = 10;}
+			if(obstacles.children[j].type == 1) {boundDiff = 25;}
+			if(obstacles.children[j].type == 2) {boundDiff = 35;}
 			if(playerY - 125 <= obstacles.children[j].y + boundDiff && playerY >= obstacles.children[j].y - boundDiff) {
 				laser_death_sound.play();
 				die();
