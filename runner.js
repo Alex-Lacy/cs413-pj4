@@ -130,6 +130,7 @@ function loadMenus(){
 	var title_screen = new PIXI.Sprite(PIXI.Texture.fromFrame('title_screen.png'));
 	title_view.addChild(title_screen);
 	title_screen.interactive = true;
+	title_screen.on('mousedown', function(){select_sound.play();});
 	title_screen.on('mousedown', changeView.bind(null, game_view));
 	title_screen.on('mousedown', function(){game_on = true;});
 	title_screen.on('mousedown', firstRun);
@@ -150,14 +151,15 @@ function loadMenus(){
 
 	var play_again = new PIXI.Sprite(PIXI.Texture.fromFrame('play_again.png'));
 	death_view.addChild(play_again);
-	play_again.position.x = 60;
+	play_again.position.x = game_width/2;
 	play_again.position.y = 250;
 	play_again.interactive = true;
+	play_again.on('mousedown', function(){select_sound.play();});
 	play_again.on('mousedown', reset);
 
 
 	var credits = new PIXI.Sprite(PIXI.Texture.fromFrame('credits.png'));
-	death_view.addChild(credits);
+	//death_view.addChild(credits);
 	credits.position.x = 420;
 	credits.position.y = 380;
 
@@ -570,7 +572,9 @@ function generateObstacles(centerX, centerY) {
 }
 
 function turnLaserOff(laser){
+
 	laser_off_sound.play();
+	setTimeout(1000, function(){laser_off_sound.pause();})
 	
 	var oldX = laser.x;
 	var oldY = laser.y;
@@ -626,7 +630,11 @@ function checkCollison() {
 	for(var j = 0; j < obstacles.children.length; j++){
 		if(obstacles.children[j].off == true) {continue;}
 		if(playerX > obstacles.children[j].x -62.5 && playerX < obstacles.children[j].x + 62.5) {
-			if(playerY - 125 <= obstacles.children[j].y - 25 && playerY >= obstacles.children[j].y + 25) {
+			var boundDiff = 0;
+			if(obstacles.children[j].type == 0) {boundDiff = 25;}
+			if(obstacles.children[j].type == 1) {boundDiff = 50;}
+			if(obstacles.children[j].type == 2) {boundDiff = 75;}
+			if(playerY - 125 <= obstacles.children[j].y + boundDiff && playerY >= obstacles.children[j].y - boundDiff) {
 				laser_death_sound.play();
 				die();
 			}
@@ -703,10 +711,18 @@ function animate(){
 
 			if (platform_2.on){
 				platform_2.update(speed);			
+<<<<<<< HEAD
+=======
+				//sign_2.update(speed);
+>>>>>>> ac04ce76e0a148103c13bfceb1c6842be6ff91c2
 			} 
 
 			if (platform_1.on){
 				platform_1.update(speed);
+<<<<<<< HEAD
+=======
+				//sign_1.update(speed);
+>>>>>>> ac04ce76e0a148103c13bfceb1c6842be6ff91c2
 				
 				if(first_platforms[first_platforms.length-1] && first_platforms[first_platforms.length-1].x + 70 < player.x){ 
 					p_collission = true;	
