@@ -91,8 +91,7 @@ var first_positioning = true;
 
 var dead = false;
 
-var sign_1 = {};
-var sign_2 = {};
+
 var num_signs = 0;
 
 
@@ -239,7 +238,7 @@ function loadGame(){
 
 // Add any keyboard functions we need to this array
 // These are they only keys that we will steal control from
-var to_overwrite = [32, 27];
+var to_overwrite = [32];
 
 window.addEventListener('keydown', function(e){
 
