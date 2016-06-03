@@ -68,8 +68,9 @@ var score = 0;
 
 var platform_texture;
 
+var score_text;
 
-var distance_from_last = -50;
+var distance_from_last = -200;
 var platform_distance = 200;
 
 var last_y = 475;
@@ -83,10 +84,13 @@ var laser_death_sound;
 var game_theme;
 var jump_sound;
 
-var rightmost_index = 8;
+
 var runningFrames = [];
 //player.runner;
+var first_positioning = true;
 
+var score_text;
+var dead = false;
 
 
 PIXI.loader
@@ -154,10 +158,6 @@ function loadMenus(){
 	credits.position.x = 420;
 	credits.position.y = 380;
 
-
-
-
-	//title_screen.on('mousedown', firstRun);
 }
 
 
@@ -165,7 +165,6 @@ function loadMenus(){
 PIXI.loader
 	.add('./scroller_assets/platform_assets/platform_assets.json')
 	.add('./obstacle_assets/laser.json')
-	//.add('./entity_assets/entity_assets.json')
 	.add("running.json") // runing player
 	.load(loadGame);
 
@@ -253,10 +252,34 @@ window.addEventListener('keydown', function(e){
 
 });
  
+
+function displayScore(){
+	// string "score: "
+	score_text = new PIXI.Text('Score: 0',{font: '24px Arial', fill: 0xffffff, align : 'center'});
+	game_view.addChild(score_text);
+	score_text.anchor.x = .5;
+	score_text.x = game_width/2;
+	
+	// string timer
+	
+	
+	
+}
+
+function updateTimer(){
+	if(game_on){
+	score_text.text = 'Score: ' + Math.floor(speed);
+	}
+}
+
+
+setInterval(updateTimer, 1000);
+
+
 function reset(){
 
 
-	for(var i = 0; i < stage.children.length-1; i++){
+	for(var i = 0; i < stage.children.length; i++){
 		stage.removeChildAt(i);
 	}
 
@@ -283,11 +306,17 @@ function reset(){
 	game_view.visible = true;
 	game_view.interactive = false;
 
+	tutorial = new PIXI.Container();
+	stage.addChild(tutorial);
+
+	tutorial.visible = false;
 
 	title_view.visible = true;
 	title_view.interactive = true;
 
 	title_view.alpha = 70;
+
+	dead = false;
 
 
 	player = {};
@@ -314,7 +343,7 @@ function reset(){
 
 	score = 0;
 
-	distance_from_last = -50;
+	distance_from_last = -200;
 	last_y = 475;
 
 	platform_1 = {};
@@ -324,6 +353,8 @@ function reset(){
 	loadMenus();
 	loadGame();
 }
+
+
 
 function jump(){
 	player.jumping = true;
@@ -337,29 +368,6 @@ function jump(){
 	jump_sound.play();
 	createjs.Tween.get(player.position).to({y: (player.y - jump_height)}, jump_time); // tween the player to the max height, then let fall() do the rest
 	window.setTimeout(function () { player.jumping = false; }, jump_time);
-	
-	// Change player animation to jump animation
-	
-	
-	//player.y -= 100;
-	
-	// set player.jumping back to false
-	
-	/**
-	var jump_time = 500;
-
-	if(player.jumping){
-		createjs.Tween.get(player).to({y: player.position.y + 120}, jump_time);
-		window.setTimeout(function () { player.jumping = false; }, jump_time);
-	}
-
-	else{
-		player.jumping = true;    
-		createjs.Tween.get(player).to({y: player.position.y - 120}, jump_time);
-		window.setTimeout(jump, jump_time);
-	}
-	**/
-	/////
 
 }
 
@@ -384,7 +392,7 @@ function fall(){
 // returns TRUE if the player is off screen
 // returns FALSE if the player is still on the screen
 
-var dead = false;
+
 
 function offScreen(){
 	if(player.y - 120 > 500){
@@ -541,40 +549,37 @@ function checkCollison() {
 
 
 function firstRun(){
-
 		
 		if(!(game_on)) return;
 
-		//first_platforms[first_platforms.length-1].visible = false;
-		for(var m = 0; m < first_platforms.length-1; m++){
+			if(first_positioning){
+				for(var k = 0; k <= game_width + 240; k += 120){
+					first_platforms[k / 120].position.x = k;
+					first_positioning = false;
+				}
+			}
 
+
+		//first_platforms[first_platforms.length-1].visible = false;
+		for(var m = 0; m < first_platforms.length; m++){
 
 			first_platforms[m].position.x -= speed;
 
-
-			if(first_platforms[m].position.x <= -120){
-				platforms.removeChild(first_platforms[m]);
-				first_platforms.splice(m, 1);
-				rightmost_index -= 1;
-				console.log(rightmost_index);
-
-			}
 		}
 
-
-
+		if(first_platforms[first_platforms.length-1].position.x <= -120){
+				platforms.removeChildren(0,9);
 			
+			first_platforms = [];		
 
-		if (first_platforms.length == 0){
 			first_run = false;
 
 		}
 
+
 		else{
 			requestAnimationFrame(firstRun);
 		}
-
-
 			
 }
 
@@ -598,7 +603,6 @@ function animate(){
 	requestAnimationFrame(animate);
 	scroller.update();
 
-
 		if(game_on){
 			if (platform_1.on || platform_2.on) {
 				moveObstacles(speed);
@@ -611,8 +615,8 @@ function animate(){
 				platform_1.update(speed);
 
 				
-				if(first_platforms[rightmost_index].x < player.x){ // the first platform has been created and passed where the play is
-					p_collission = true;
+				if(first_platforms[first_platforms.length-1] && first_platforms[first_platforms.length-1].x + 70 < player.x){ 
+					p_collission = true;	
 				}
 			}
 				// the initial creation of segments that were not an actual platform object have been removed from the screen
@@ -647,13 +651,12 @@ function animate(){
 			//platform_distance += speed;
 
 			speed += .001;
-			score += 100 * speed;
-			player.animationSpeed += speed/100000;
+			score += speed * 1.5;
 	}
 
 	else{
 
-		for(var k = 0; k < platforms.children.length-1; k++){
+		for(var k = 0; k < platforms.children.length; k++){
 		 
 		 		platforms.children[k].position.x -= speed;
 		 		
