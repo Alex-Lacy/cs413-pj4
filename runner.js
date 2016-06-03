@@ -321,7 +321,7 @@ function reset(){
 
 	player = {};
 	player.jumping = false;
-
+	player.hasJumped = false;
 
 	first_positioning = true;
 	first_run = true;
@@ -496,6 +496,8 @@ function generateObstacles(centerX, centerY) {
 }
 
 function turnLaserOff(laser){
+	laser_death_sound.play();
+	
 	var oldX = laser.x;
 	var oldY = laser.y;
 	
