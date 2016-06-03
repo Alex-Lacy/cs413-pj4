@@ -84,7 +84,7 @@ var game_theme;
 var jump_sound;
 
 var rightmost_index = 8;
-player.runningFrames;
+var runningFrames = [];
 //player.runner;
 
 
@@ -174,11 +174,11 @@ function loadGame(){
 
 
 
-	player.runningFrames = [];
+	runningFrames = [];
 	for(i=1; i<=4; i++) {
-		player.runningFrames.push(PIXI.Texture.fromFrame('running' + i + '.png'));
+		runningFrames.push(PIXI.Texture.fromFrame('running' + i + '.png'));
 	}
-	player = new PIXI.extras.MovieClip(player.runningFrames);
+	player = new PIXI.extras.MovieClip(runningFrames);
 	game_view.addChild(player);
 	player.animationSpeed = 0.25;
 	player.anchor.x = .5;
@@ -327,6 +327,9 @@ function reset(){
 
 function jump(){
 	player.jumping = true;
+	// Change animation 
+	player.textures = [runningFrames[0]];
+	player.hasJumped = true;
 	var jump_time = 600 - speed;
 	var jump_height = 160 + speed;
 	
@@ -334,6 +337,9 @@ function jump(){
 	jump_sound.play();
 	createjs.Tween.get(player.position).to({y: (player.y - jump_height)}, jump_time); // tween the player to the max height, then let fall() do the rest
 	window.setTimeout(function () { player.jumping = false; }, jump_time);
+	
+	// Change player animation to jump animation
+	
 	
 	//player.y -= 100;
 	
@@ -402,6 +408,13 @@ function collisionPlatform(){// platform x = 1, y = 0 = top right //player x = .
 		if (player.y < platform_1.height + 40 || player.y > (platform_1.height + 70)){ // player is above/ below the platform	
 
 			fall(); // fall() checks if the player is jumping
+		}
+		else {
+			
+			// Recreate player running animation and switch hasJumped to false
+			player.textures = runningFrames;
+			player.hasJumped = false;
+			player.play();
 		}
 	}
 
