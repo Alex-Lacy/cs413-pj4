@@ -95,9 +95,6 @@ var sign_1 = {};
 var sign_2 = {};
 var num_signs = 0;
 
-var paused = false;
-var unpaused = true;
-
 
 PIXI.loader
 	.add('./menu_assets/menu_assets.json')
@@ -251,15 +248,7 @@ window.addEventListener('keydown', function(e){
 	else {
 
 		e.preventDefault();
-		if(e.repeat || !player)	return;
-
-		else if (e.keyCode == 27){
-
-			if(paused) unpause();
-			if(unpaused) pause();
-		}
-
-		else if (player.jumping) return;
+		if(e.repeat || !player || player.jumping)  return;
 
 		else if (e.keyCode == 32)
 			
@@ -286,16 +275,6 @@ window.addEventListener('keydown', function(e){
 });
 
 
-function pause(){
-
-	pasued = true;
-	unpaused = false;
-	player.animationSpeed = 0;
-	temp_speed = speed;
-	temp_score = score;
-	speed = 0;
-	
-}
  
 
 function displayScore(){
@@ -359,7 +338,6 @@ function reset(){
 	game_view.interactive = false;
 
 
-
 	tutorial.visible = true;;
 
 	title_view.visible = true;
@@ -371,6 +349,7 @@ function reset(){
 
 	score_text = "Score: 0"
 	player = {};
+	
 	player.jumping = false;
 	player.hasJumped = false;
 
@@ -391,9 +370,6 @@ function reset(){
 
 	p_collission = false; // collision for platforms
 
-	paused = false;
-	unpaused = true;
-
 	platform_distance = 200;
 
 	score = 0;
@@ -404,9 +380,7 @@ function reset(){
 	platform_1 = {};
 	platform_2 = {};
 
-	sign_1 = {};
-	sign_2 = {};
-	num_signs = 0;
+
 
 	//player.runner;
 	loadMenus();
@@ -783,10 +757,9 @@ function animate(){
 			distance_from_last += speed;
 
 			//platform_distance += speed;
-			if(unpaused){
 				speed += .001;
 				score += speed * 1.5;
-			}
+			
 	}
 
 	else{
