@@ -50,7 +50,7 @@ title_view.alpha = 70;
 var player = {};
 player.jumping = false;
 
-var laserTextureArrays = [];
+var laserTextures = [];
 
 var first_run = true;
 
@@ -83,15 +83,12 @@ var fall_death_sound;
 var laser_death_sound;
 var game_theme;
 var jump_sound;
-var laser_off_sound;
-
 
 
 var runningFrames = [];
 //player.runner;
 var first_positioning = true;
 
-var score_text;
 var dead = false;
 
 
@@ -167,8 +164,6 @@ function loadMenus(){
 PIXI.loader
 	.add('./scroller_assets/platform_assets/platform_assets.json')
 	.add('./obstacle_assets/laser.json')
-	.add('./obstacle_assets/laser2.json')
-	.add('./obstacle_assets/laser3.json')
 	.add("running.json") // runing player
 	.load(loadGame);
 
@@ -191,22 +186,11 @@ function loadGame(){
 	player.play();
 
 
-	// laserz 1
-	var laserTexture1 = [];
+	// laserz
 	for(var a=1; a<=11; a++) {
-		laserTexture1.push(PIXI.Texture.fromFrame('laser_trap_air_'+a+'.png'));
+		laserTextures.push(PIXI.Texture.fromFrame('laser_trap_air_'+a+'.png'));
 	}
-	// laserz 2
-	var laserTexture2 = [];
-	for(var a=2; a<=12; a++) {
-		laserTexture2.push(PIXI.Texture.fromFrame('blaser'+a+'.png'));
-	}
-	// laserz 3
-	var laserTexture3 = [];
-	for(var a=3; a<=11; a++) {
-		laserTexture3.push(PIXI.Texture.fromFrame('glaser'+a+'.png'));
-	}
-	laserTextureArray = [laserTexture1,laserTexture2,laserTexture3];
+
 
 
 	platform_texture = PIXI.Texture.fromFrame('mid_0.png');
@@ -225,7 +209,7 @@ function loadGame(){
 		first_platforms.push(platformk);
 
 	}
-	
+ displayScore();
 }
 
 
@@ -271,7 +255,9 @@ window.addEventListener('keydown', function(e){
 function displayScore(){
 	// string "score: "
 	score_text = new PIXI.Text('Score: 0',{font: '24px Arial', fill: 0xffffff, align : 'center'});
+
 	game_view.addChild(score_text);
+	score_text.visible = false;
 	score_text.anchor.x = .5;
 	score_text.x = game_width/2;
 	
@@ -284,6 +270,7 @@ function displayScore(){
 function updateTimer(){
 	if(game_on){
 	score_text.text = 'Score: ' + Math.floor(speed);
+	score_text.visible = true;
 	}
 }
 
@@ -333,11 +320,12 @@ function reset(){
 
 	dead = false;
 
-
+	score_text = "Score: 0"
 	player = {};
 	player.jumping = false;
 	player.hasJumped = false;
 
+	first_positioning = true;
 	first_run = true;
 
 	first_platforms = [];
@@ -364,6 +352,7 @@ function reset(){
 	platform_1 = {};
 	platform_2 = {};
 
+	//player.runner;
 	loadMenus();
 	loadGame();
 }
@@ -455,16 +444,18 @@ function collisionPlatform(){// platform x = 1, y = 0 = top right //player x = .
 	
 	// check if player is jumping
 	else fall();
-	}
+	}// Ends if(p_collission)
+
+
 	else{ // player is in the first run bit of platform (the neverending platform)
 		if(player.y < 420){
 			fall();
 		}
-		else {
-			player.textures = runningFrames;
-			player.hasJumped = false;
-			player.play();
+
+		else{
+			// Steves landing stuff
 		}
+
 	}
 }
 
@@ -498,9 +489,7 @@ function generateObstacles(centerX, centerY) {
 	// so using floor the top range has to be one more then what you want
 	
 	for(i=0; i < amount; i++){
-		var type = Math.floor(Math.random() * 3);
-		
-		var laser = new PIXI.extras.MovieClip(laserTextureArray[type]);
+		var laser = new PIXI.extras.MovieClip(laserTextures);
 		
 		var laserDeltaX = Math.floor(Math.random() * 400) - 200;
 		var laserDeltaY = Math.floor(Math.random() * 100) - 50;
@@ -515,7 +504,6 @@ function generateObstacles(centerX, centerY) {
 		laser.loop = true;
 		laser.interactive = true;
 		laser.on('mousedown', turnLaserOff.bind(null, laser));
-		laser.type = type;
 		laser.play();
 
 		obstacles.addChild(laser);	
@@ -524,22 +512,12 @@ function generateObstacles(centerX, centerY) {
 }
 
 function turnLaserOff(laser){
-	laser_off_sound.play();
+	laser_death_sound.play();
 	
 	var oldX = laser.x;
 	var oldY = laser.y;
-	var newLaser;
-	switch (laser.type) {
-		case 0:
-			newLaser = new PIXI.extras.MovieClip([laserTextureArray[0][0]]);
-			break;
-		case 1:
-			newLaser = new PIXI.extras.MovieClip([laserTextureArray[1][0]]);
-			break;
-		case 2:
-			newLaser = new PIXI.extras.MovieClip([laserTextureArray[2][0]]);
-			break;
-	}
+	
+	var newLaser = new PIXI.extras.MovieClip([laserTextures[0]]);
 	
 	newLaser.anchor.x = 0.5;
 	newLaser.anchor.y = 0.5;
@@ -564,7 +542,7 @@ function moveObstacles(amount) {
 
 		obstacles.children[j].position.x -= speed;
 
-		if(obstacles.children[j].position.x + 62.5 <= 0){
+		if(obstacles.children[j].position.x <= 0){
 			obstacles.removeChildAt(j);
 			
 		}
@@ -580,7 +558,7 @@ function checkCollison() {
 	for(var j = 0; j < obstacles.children.length; j++){
 		if(obstacles.children[j].off == true) {continue;}
 		if(playerX > obstacles.children[j].x -62.5 && playerX < obstacles.children[j].x + 62.5) {
-			if(playerY - 125 <= obstacles.children[j].y - 25 && playerY >= obstacles.children[j].y + 25) {
+			if(playerY - 125 <= obstacles.children[j].y - 15 && playerY >= obstacles.children[j].y + 15) {
 				die();
 			}
 		}
@@ -592,6 +570,8 @@ function checkCollison() {
 function firstRun(){
 		
 		if(!(game_on)) return;
+
+
 
 			if(first_positioning){
 				for(var k = 0; k <= game_width + 240; k += 120){
@@ -636,6 +616,7 @@ function die() {
 	
 	changeView(death_view);
 	game_view.visible = true;
+	player.visible = false;
 }
 
 
