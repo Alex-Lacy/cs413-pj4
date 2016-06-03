@@ -447,9 +447,6 @@ function changeView(view){
 // TODO: add other object groups
 function generateObstacles(centerX, centerY) {
 	
-	// Generate a random number and position and type of lasers
-	var container = new PIXI.Container();
-	
 	var amount = Math.floor(Math.random() * (4 -1) + 1); // The top range in this formula for random is exclusive, 
 	// so using floor the top range has to be one more then what you want
 	
@@ -467,19 +464,34 @@ function generateObstacles(centerX, centerY) {
 		
 		laser.animationSpeed = .25;
 		laser.loop = true;
+		laser.interactive = true;
+		laser.on('mousedown', turnLaserOff.bind(null, laser));
 		laser.play();
 
-		container.addChild(laser);	
+		obstacles.addChild(laser);	
 		
 	}
-	obstacles.addChild(container);
 }
 
-
-
-
-function turnLasersOff(){
-
+function turnLaserOff(laser){
+	var oldX = laser.x;
+	var oldY = laser.y;
+	
+	var newLaser = new PIXI.extras.MovieClip([laserTextures[0]]);
+	
+	newLaser.anchor.x = 0.5;
+	newLaser.anchor.y = 0.5;
+	
+	newLaser.position.x = oldX;
+	newLaser.position.y = oldY;
+	
+	newLaser.off = true;
+	newLaser.animationSpeed = .25;
+	newLaser.loop = true;
+	newLaser.play();
+	
+	obstacles.removeChild(laser);
+	obstacles.addChild(newLaser);	
 }
 
   
@@ -490,7 +502,7 @@ function moveObstacles(amount) {
 
 		obstacles.children[j].position.x -= speed;
 
-		if(obstacles.children[j].position.x + game_width * game_width <= 0){
+		if(obstacles.children[j].position.x <= 0){
 			obstacles.removeChildAt(j);
 			
 		}
@@ -499,17 +511,17 @@ function moveObstacles(amount) {
 
 }
 
-// Cycles through each object and checks for collison
+// Cycles through each object and checks0 for collison
 function checkCollison() {
 	var playerX = player.position.x;
 	var playerY = player.position.y;
 	for(var j = 0; j < obstacles.children.length; j++){
-		if(obstacles.children[j].position.x <= playerX + 62.5 && obstacles.children[j].position.x >= playerX - 62.5) {
-			if(obstacles.children[j].position.y <= playerY + 62.5 && obstacles.children[j].position.y >= playerY - 62.5) {
+		if(obstacles.children[j].off == true) {continue;}
+		if(playerX > obstacles.children[j].x -62.5 && playerX < obstacles.children[j].x + 62.5) {
+			if(playerY - 125 <= obstacles.children[j].y - 15 && playerY >= obstacles.children[j].y + 15) {
 				die();
 			}
 		}
-
 	}
 }
 
@@ -574,7 +586,10 @@ function animate(){
 	scroller.update();
 	console.log(rightmost_index);
 		if(game_on){
-			if (platform_1.on || platform_2.on) moveObstacles(speed);
+			if (platform_1.on || platform_2.on) {
+				moveObstacles(speed);
+				checkCollison();
+			}
 
 			if (platform_2.on) platform_2.update(speed);
 
