@@ -83,15 +83,12 @@ var fall_death_sound;
 var laser_death_sound;
 var game_theme;
 var jump_sound;
-var laser_off_sound;
-
 
 
 var runningFrames = [];
 //player.runner;
 var first_positioning = true;
 
-var score_text;
 var dead = false;
 
 
@@ -164,6 +161,7 @@ function loadMenus(){
 
 
 
+
 PIXI.loader
 	.add('./scroller_assets/platform_assets/platform_assets.json')
 	.add('./obstacle_assets/laser.json')
@@ -191,6 +189,7 @@ function loadGame(){
 	player.play();
 
 
+	
 	// laserz 1
 	var laserTexture1 = [];
 	for(var a=1; a<=11; a++) {
@@ -209,6 +208,8 @@ function loadGame(){
 	laserTextureArray = [laserTexture1,laserTexture2,laserTexture3];
 
 
+
+
 	platform_texture = PIXI.Texture.fromFrame('mid_0.png');
 	
 
@@ -225,7 +226,7 @@ function loadGame(){
 		first_platforms.push(platformk);
 
 	}
-	
+ displayScore();
 }
 
 
@@ -271,7 +272,9 @@ window.addEventListener('keydown', function(e){
 function displayScore(){
 	// string "score: "
 	score_text = new PIXI.Text('Score: 0',{font: '24px Arial', fill: 0xffffff, align : 'center'});
+
 	game_view.addChild(score_text);
+	score_text.visible = false;
 	score_text.anchor.x = .5;
 	score_text.x = game_width/2;
 	
@@ -283,7 +286,8 @@ function displayScore(){
 
 function updateTimer(){
 	if(game_on){
-	score_text.text = 'Score: ' + Math.floor(speed);
+	score_text.text = 'Score: ' + Math.floor(score);
+	score_text.visible = true;
 	}
 }
 
@@ -333,11 +337,12 @@ function reset(){
 
 	dead = false;
 
-
+	score_text = "Score: 0"
 	player = {};
 	player.jumping = false;
 	player.hasJumped = false;
 
+	first_positioning = true;
 	first_run = true;
 
 	first_platforms = [];
@@ -364,6 +369,7 @@ function reset(){
 	platform_1 = {};
 	platform_2 = {};
 
+	//player.runner;
 	loadMenus();
 	loadGame();
 }
@@ -375,6 +381,7 @@ function jump(){
 	// Change animation 
 	player.textures = [runningFrames[0]];
 	player.hasJumped = true;
+	player.play();
 	var jump_time = 600 - speed;
 	var jump_height = 160 + speed;
 	
@@ -455,16 +462,21 @@ function collisionPlatform(){// platform x = 1, y = 0 = top right //player x = .
 	
 	// check if player is jumping
 	else fall();
-	}
+	}// Ends if(p_collission)
+
+
 	else{ // player is in the first run bit of platform (the neverending platform)
 		if(player.y < 420){
 			fall();
 		}
-		else {
+
+		else{
+
 			player.textures = runningFrames;
 			player.hasJumped = false;
 			player.play();
 		}
+
 	}
 }
 
@@ -489,6 +501,7 @@ function changeView(view){
 
 	
 }
+
 
 // As long as there is less then 3 objects generate a new set of object 
 // TODO: add other object groups
@@ -556,6 +569,7 @@ function turnLaserOff(laser){
 	obstacles.addChild(newLaser);	
 }
 
+
   
 // Cycles through each obstacle and moves based on the amount given
 function moveObstacles(amount) {
@@ -569,9 +583,8 @@ function moveObstacles(amount) {
 			
 		}
 	}
-
-
 }
+
 
 // Cycles through each object and checks0 for collison
 function checkCollison() {
@@ -581,6 +594,7 @@ function checkCollison() {
 		if(obstacles.children[j].off == true) {continue;}
 		if(playerX > obstacles.children[j].x -62.5 && playerX < obstacles.children[j].x + 62.5) {
 			if(playerY - 125 <= obstacles.children[j].y - 25 && playerY >= obstacles.children[j].y + 25) {
+				laser_death_sound.play();
 				die();
 			}
 		}
@@ -588,10 +602,11 @@ function checkCollison() {
 }
 
 
-
 function firstRun(){
 		
 		if(!(game_on)) return;
+
+
 
 			if(first_positioning){
 				for(var k = 0; k <= game_width + 240; k += 120){
@@ -636,6 +651,8 @@ function die() {
 	
 	changeView(death_view);
 	game_view.visible = true;
+	player.visible = false;
+	dead = true;
 }
 
 
