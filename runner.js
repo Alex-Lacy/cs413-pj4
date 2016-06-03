@@ -712,18 +712,10 @@ function animate(){
 
 			if (platform_2.on){
 				platform_2.update(speed);			
-<<<<<<< HEAD
-=======
-				//sign_2.update(speed);
->>>>>>> ac04ce76e0a148103c13bfceb1c6842be6ff91c2
 			} 
 
 			if (platform_1.on){
 				platform_1.update(speed);
-<<<<<<< HEAD
-=======
-				//sign_1.update(speed);
->>>>>>> ac04ce76e0a148103c13bfceb1c6842be6ff91c2
 				
 				if(first_platforms[first_platforms.length-1] && first_platforms[first_platforms.length-1].x + 70 < player.x){ 
 					p_collission = true;	
