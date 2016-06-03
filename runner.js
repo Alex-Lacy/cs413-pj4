@@ -23,11 +23,11 @@ stage.addChild(title_view);
 
 var scroller = new Scroller(game_view);
 
-var platforms = new PIXI.Container();
-game_view.addChild(platforms);
-
 var tutorial = new PIXI.Container();
 game_view.addChild(tutorial);
+
+var platforms = new PIXI.Container();
+game_view.addChild(platforms);
 
 var obstacles = new PIXI.Container();
 game_view.addChild(obstacles);
@@ -94,6 +94,9 @@ var dead = false;
 var sign_1 = {};
 var sign_2 = {};
 var num_signs = 0;
+
+var paused = false;
+var unpaused = true;
 
 
 PIXI.loader
@@ -239,7 +242,7 @@ function loadGame(){
 
 // Add any keyboard functions we need to this array
 // These are they only keys that we will steal control from
-var to_overwrite = [32];
+var to_overwrite = [32, 27];
 
 window.addEventListener('keydown', function(e){
 
@@ -248,8 +251,16 @@ window.addEventListener('keydown', function(e){
 	else {
 
 		e.preventDefault();
-		if(e.repeat || !player || player.jumping)
-			return;
+		if(e.repeat || !player)	return;
+
+		else if (e.keyCode == 27){
+
+			if(paused) unpause();
+			if(unpaused) pause();
+		}
+
+		else if (player.jumping) return;
+
 		else if (e.keyCode == 32)
 			
 			// check if player is on one of the platforms
@@ -273,6 +284,18 @@ window.addEventListener('keydown', function(e){
 	}
 
 });
+
+
+function pause(){
+
+	pasued = true;
+	unpaused = false;
+	player.animationSpeed = 0;
+	temp_speed = speed;
+	temp_score = score;
+	speed = 0;
+	
+}
  
 
 function displayScore(){
@@ -316,11 +339,12 @@ function reset(){
 
 	scroller = new Scroller(game_view);
 
+	tutorial = new PIXI.Container();
+	game_view.addChild(tutorial);
+
 	platforms = new PIXI.Container();
 	game_view.addChild(platforms);
 
-	tutorial = new PIXI.Container();
-	game_view.addChild(tutorial);
 
 	obstacles = new PIXI.Container();
 	game_view.addChild(obstacles);
@@ -366,6 +390,9 @@ function reset(){
 	game_on = false;
 
 	p_collission = false; // collision for platforms
+
+	paused = false;
+	unpaused = true;
 
 	platform_distance = 200;
 
@@ -711,18 +738,12 @@ function animate(){
 
 			if (platform_2.on){
 				platform_2.update(speed);			
-<<<<<<< HEAD
-=======
-				//sign_2.update(speed);
->>>>>>> ac04ce76e0a148103c13bfceb1c6842be6ff91c2
+
 			} 
 
 			if (platform_1.on){
 				platform_1.update(speed);
-<<<<<<< HEAD
-=======
-				//sign_1.update(speed);
->>>>>>> ac04ce76e0a148103c13bfceb1c6842be6ff91c2
+
 				
 				if(first_platforms[first_platforms.length-1] && first_platforms[first_platforms.length-1].x + 70 < player.x){ 
 					p_collission = true;	
@@ -761,9 +782,10 @@ function animate(){
 			distance_from_last += speed;
 
 			//platform_distance += speed;
-
-			speed += .001;
-			score += speed * 1.5;
+			if(unpaused){
+				speed += .001;
+				score += speed * 1.5;
+			}
 	}
 
 	else{
