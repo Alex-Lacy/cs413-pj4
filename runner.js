@@ -572,7 +572,7 @@ function animate(){
 
 	requestAnimationFrame(animate);
 	scroller.update();
-
+	console.log(rightmost_index);
 		if(game_on){
 			if (platform_1.on || platform_2.on) moveObstacles(speed);
 
@@ -581,9 +581,8 @@ function animate(){
 			if (platform_1.on){
 				platform_1.update(speed);
 
-
-				if(platform_1.segments[0].x < player.x + 232){ // the first platform has been created and passed where the play is
-
+				
+				if(first_platforms[rightmost_index].x < player.x){ // the first platform has been created and passed where the play is
 					p_collission = true;
 				}
 			}
