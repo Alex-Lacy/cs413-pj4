@@ -127,7 +127,7 @@ function loadMenus(){
 	title_view.addChild(title_screen);
 	title_screen.interactive = true;
 	title_screen.on('mousedown', changeView.bind(null, game_view));
-	title_screen.on('mousedown', function(){game_on = true;});
+	title_screen.on('mousedown', function(){game_on = true; select_sound.play();});
 	title_screen.on('mousedown', firstRun);
 
 
@@ -297,7 +297,8 @@ setInterval(updateTimer, 1000);
 
 function reset(){
 
-
+	select_sound.play();
+	
 	for(var i = 0; i < stage.children.length; i++){
 		stage.removeChildAt(i);
 	}
@@ -593,9 +594,25 @@ function checkCollison() {
 	for(var j = 0; j < obstacles.children.length; j++){
 		if(obstacles.children[j].off == true) {continue;}
 		if(playerX > obstacles.children[j].x -62.5 && playerX < obstacles.children[j].x + 62.5) {
-			if(playerY - 125 <= obstacles.children[j].y - 25 && playerY >= obstacles.children[j].y + 25) {
-				laser_death_sound.play();
-				die();
+			switch (obstacles.children[j].type) {
+				case 0: // red
+					if(playerY - 125 <= obstacles.children[j].y - 30 && playerY >= obstacles.children[j].y + 30) {
+						laser_death_sound.play();
+						die();
+					}
+					break;
+				case 1: // blue
+					if(playerY - 125 <= obstacles.children[j].y - 50 && playerY >= obstacles.children[j].y + 50) {
+						laser_death_sound.play();
+						die();
+					}
+					break;
+				case 2: // green
+					if(playerY - 125 <= obstacles.children[j].y - 175 && playerY >= obstacles.children[j].y + 175) {
+						laser_death_sound.play();
+						die();
+					}
+					break;
 			}
 		}
 	}
