@@ -151,7 +151,7 @@ function loadMenus(){
 
 	var play_again = new PIXI.Sprite(PIXI.Texture.fromFrame('play_again.png'));
 	death_view.addChild(play_again);
-	play_again.position.x = 60;
+	play_again.position.x = game_width/2;
 	play_again.position.y = 250;
 	play_again.interactive = true;
 	play_again.on('mousedown', function(){select_sound.play();});
@@ -159,7 +159,7 @@ function loadMenus(){
 
 
 	var credits = new PIXI.Sprite(PIXI.Texture.fromFrame('credits.png'));
-	death_view.addChild(credits);
+	//death_view.addChild(credits);
 	credits.position.x = 420;
 	credits.position.y = 380;
 
