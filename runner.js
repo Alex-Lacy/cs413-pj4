@@ -26,14 +26,14 @@ var scroller = new Scroller(game_view);
 var platforms = new PIXI.Container();
 game_view.addChild(platforms);
 
+var tutorial = new PIXI.Container();
+game_view.addChild(tutorial);
+
 var obstacles = new PIXI.Container();
 game_view.addChild(obstacles);
 
 var death_view = new PIXI.Container();
 stage.addChild(death_view);
-
-var tutorial = new PIXI.Container();
-stage.addChild(tutorial);
 
 death_view.visible = false;
 death_view.interactive = false;
@@ -317,6 +317,9 @@ function reset(){
 	platforms = new PIXI.Container();
 	game_view.addChild(platforms);
 
+	tutorial = new PIXI.Container();
+	game_view.addChild(tutorial);
+
 	obstacles = new PIXI.Container();
 	game_view.addChild(obstacles);
 
@@ -329,10 +332,9 @@ function reset(){
 	game_view.visible = true;
 	game_view.interactive = false;
 
-	tutorial = new PIXI.Container();
-	stage.addChild(tutorial);
 
-	tutorial.visible = false;
+
+	tutorial.visible = true;;
 
 	title_view.visible = true;
 	title_view.interactive = true;
@@ -380,6 +382,7 @@ function reset(){
 	//player.runner;
 	loadMenus();
 	loadGame();
+	generateInstructions();
 }
 
 
@@ -508,19 +511,29 @@ function changeView(view){
 	view.interactive = true;
 }
 
+PIXI.loader
+	.add('instructions.json')
+	.load(generateInstructions);
 
-function generateInstruction(centerX){
 
-	var new_kind = Math.floor(Math.random * (4 - 1)  + 1)
+function generateInstructions(centerX){
 
-	if(num_signs == 0) new_kind = 1;
-	else if(num_signs == 1) new_kind = 2;
-	else if(num_signs == 2) new_kind = 3;
+	for(var i = 0; i <= 800; i += 400){
+		var	tutorial_sign = new PIXI.Sprite(PIXI.Texture.fromFrame("instructions_"+((i/400)+1)+".png"));
+		tutorial.addChild(tutorial_sign);
+		tutorial_sign.anchor.x = 1.0;
+		tutorial_sign.anchor.y = .5;
+		tutorial_sign.position.x = i*3 + 1600;
+		tutorial_sign.position.y = 180;
+}
+}
 
-	var temp = new TutorialSign(centerX, new_kind, game_view);
 
-	return temp;
+function moveInstructions(speed){
 
+	for(var i = 0; i < tutorial.children.length; i++){
+		tutorial.children[i].position.x -= speed;
+	}
 }
 
 // As long as there is less then 3 objects generate a new set of object 
@@ -685,16 +698,15 @@ function animate(){
 			if (platform_1.on || platform_2.on) {
 				moveObstacles(speed);
 				checkCollison();
+				moveInstructions(speed);
 			}
 
 			if (platform_2.on){
 				platform_2.update(speed);			
-				sign_2.update(speed);
 			} 
 
 			if (platform_1.on){
 				platform_1.update(speed);
-				sign_1.update(speed);
 				
 				if(first_platforms[first_platforms.length-1] && first_platforms[first_platforms.length-1].x + 70 < player.x){ 
 					p_collission = true;	
@@ -711,7 +723,7 @@ function animate(){
 					
 					platform_1 = new Platform(last_y, platforms);
 					generateObstacles(platform_1.segments[Math.floor(platform_1.segments.length/2)].position.x, platform_1.height);
-					sign_1 = generateInstruction(platform_1.segments[Math.floor(platform_1.segments.length/2)].position.x);
+					
 					num_signs += 1;
 					last_y = platform_1.height;
 					distance_from_last = -(platform_1.width*120);
@@ -723,8 +735,7 @@ function animate(){
 					
 					platform_2 = new Platform(last_y, platforms);
 					generateObstacles(platform_2.segments[Math.floor(platform_2.segments.length/2)].position.x, platform_2.height);
-					sign_2 = generateInstruction(platform_2.segments[Math.floor(platform_2.segments.length/2)].position.x);
-					num_signs += 1;
+					
 					last_y = platform_2.height;			
 					distance_from_last = -(platform_2.width*120);
 
