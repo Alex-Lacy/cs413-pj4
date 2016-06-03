@@ -6,7 +6,7 @@
         <key>texturePackerVersion</key>
         <string>4.2.1</string>
         <key>fileName</key>
-        <string>Z:/cs413/project_4/cs413-pj4/menu_assets/menu_assets.tps</string>
+        <string>Z:/cs413/project_4/cs413-pj4/obstacle_assets/glaser.tps</string>
         <key>autoSDSettings</key>
         <array>
             <struct type="AutoSDSettings">
@@ -28,7 +28,7 @@
             </struct>
         </array>
         <key>allowRotation</key>
-        <false/>
+        <true/>
         <key>shapeDebug</key>
         <false/>
         <key>dpi</key>
@@ -141,7 +141,7 @@
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename>menu_assets.json</filename>
+                <filename></filename>
             </struct>
         </map>
         <key>multiPack</key>
@@ -188,15 +188,15 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
-            <key type="filename">click_the_lasers.png</key>
-            <key type="filename">credits.png</key>
-            <key type="filename">death.png</key>
-            <key type="filename">jump_the_gaps.png</key>
-            <key type="filename">play_again.png</key>
-            <key type="filename">spacebar.png</key>
-            <key type="filename">survive.png</key>
-            <key type="filename">title_screen.png</key>
-            <key type="filename">you_died.png</key>
+            <key type="filename">glaser10.png</key>
+            <key type="filename">glaser11.png</key>
+            <key type="filename">glaser3.png</key>
+            <key type="filename">glaser4.png</key>
+            <key type="filename">glaser5.png</key>
+            <key type="filename">glaser6.png</key>
+            <key type="filename">glaser7.png</key>
+            <key type="filename">glaser8.png</key>
+            <key type="filename">glaser9.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -204,15 +204,15 @@
         </map>
         <key>fileList</key>
         <array>
-            <filename>title_screen.png</filename>
-            <filename>you_died.png</filename>
-            <filename>credits.png</filename>
-            <filename>death.png</filename>
-            <filename>play_again.png</filename>
-            <filename>spacebar.png</filename>
-            <filename>survive.png</filename>
-            <filename>click_the_lasers.png</filename>
-            <filename>jump_the_gaps.png</filename>
+            <filename>glaser3.png</filename>
+            <filename>glaser4.png</filename>
+            <filename>glaser5.png</filename>
+            <filename>glaser6.png</filename>
+            <filename>glaser7.png</filename>
+            <filename>glaser8.png</filename>
+            <filename>glaser9.png</filename>
+            <filename>glaser10.png</filename>
+            <filename>glaser11.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>
