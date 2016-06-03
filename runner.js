@@ -130,6 +130,7 @@ function loadMenus(){
 	var title_screen = new PIXI.Sprite(PIXI.Texture.fromFrame('title_screen.png'));
 	title_view.addChild(title_screen);
 	title_screen.interactive = true;
+	title_screen.on('mousedown', function(){select_sound.play();});
 	title_screen.on('mousedown', changeView.bind(null, game_view));
 	title_screen.on('mousedown', function(){game_on = true;});
 	title_screen.on('mousedown', firstRun);
@@ -153,6 +154,7 @@ function loadMenus(){
 	play_again.position.x = 60;
 	play_again.position.y = 250;
 	play_again.interactive = true;
+	play_again.on('mousedown', function(){select_sound.play();});
 	play_again.on('mousedown', reset);
 
 
@@ -557,7 +559,9 @@ function generateObstacles(centerX, centerY) {
 }
 
 function turnLaserOff(laser){
+
 	laser_off_sound.play();
+	setTimeout(1000, function(){laser_off_sound.pause();})
 	
 	var oldX = laser.x;
 	var oldY = laser.y;
@@ -693,12 +697,12 @@ function animate(){
 
 			if (platform_2.on){
 				platform_2.update(speed);			
-				sign_2.update(speed);
+				//sign_2.update(speed);
 			} 
 
 			if (platform_1.on){
 				platform_1.update(speed);
-				sign_1.update(speed);
+				//sign_1.update(speed);
 				
 				if(first_platforms[first_platforms.length-1] && first_platforms[first_platforms.length-1].x + 70 < player.x){ 
 					p_collission = true;	
