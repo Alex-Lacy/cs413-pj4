@@ -323,6 +323,7 @@ function reset(){
 	player.jumping = false;
 
 
+	first_positioning = true;
 	first_run = true;
 
 	first_platforms = [];
