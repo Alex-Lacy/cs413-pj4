@@ -141,7 +141,7 @@
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename>../../project_3/menu_assets/menus.json</filename>
+                <filename>menu_assets.json</filename>
             </struct>
         </map>
         <key>multiPack</key>
@@ -188,9 +188,13 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
+            <key type="filename">click_the_lasers.png</key>
             <key type="filename">credits.png</key>
             <key type="filename">death.png</key>
+            <key type="filename">jump_the_gaps.png</key>
             <key type="filename">play_again.png</key>
+            <key type="filename">spacebar.png</key>
+            <key type="filename">survive.png</key>
             <key type="filename">title_screen.png</key>
             <key type="filename">you_died.png</key>
             <struct type="IndividualSpriteSettings">
@@ -205,6 +209,10 @@
             <filename>credits.png</filename>
             <filename>death.png</filename>
             <filename>play_again.png</filename>
+            <filename>spacebar.png</filename>
+            <filename>survive.png</filename>
+            <filename>click_the_lasers.png</filename>
+            <filename>jump_the_gaps.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

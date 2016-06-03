@@ -32,6 +32,9 @@ game_view.addChild(obstacles);
 var death_view = new PIXI.Container();
 stage.addChild(death_view);
 
+var tutorial = new PIXI.Container();
+stage.addChild(tutorial);
+
 death_view.visible = false;
 death_view.interactive = false;
 
@@ -80,6 +83,7 @@ var laser_death_sound;
 var game_theme;
 var jump_sound;
 
+var rightmost_index = 8;
 player.runningFrames;
 //player.runner;
 
@@ -515,6 +519,8 @@ function firstRun(){
 			if(first_platforms[m].position.x <= -120){
 				platforms.removeChild(first_platforms[m]);
 				first_platforms.splice(m, 1);
+				rightmost_index -= 1;
+				console.log(rightmost_index);
 
 			}
 		}
