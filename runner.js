@@ -91,6 +91,10 @@ var first_positioning = true;
 
 var dead = false;
 
+var sign_1 = {};
+var sign_2 = {};
+var num_signs = 0;
+
 
 PIXI.loader
 	.add('./menu_assets/menu_assets.json')
@@ -369,6 +373,10 @@ function reset(){
 	platform_1 = {};
 	platform_2 = {};
 
+	sign_1 = {};
+	sign_2 = {};
+	num_signs = 0;
+
 	//player.runner;
 	loadMenus();
 	loadGame();
@@ -498,10 +506,22 @@ function changeView(view){
 
 	view.visible = true;
 	view.interactive = true;
-
-	
 }
 
+
+function generateInstruction(centerX){
+
+	var new_kind = Math.floor(Math.random * (4 - 1)  + 1)
+
+	if(num_signs == 0) new_kind = 1;
+	else if(num_signs == 1) new_kind = 2;
+	else if(num_signs == 2) new_kind = 3;
+
+	var temp = new TutorialSign(centerX, new_kind, game_view);
+
+	return temp;
+
+}
 
 // As long as there is less then 3 objects generate a new set of object 
 // TODO: add other object groups
@@ -667,11 +687,14 @@ function animate(){
 				checkCollison();
 			}
 
-			if (platform_2.on) platform_2.update(speed);
+			if (platform_2.on){
+				platform_2.update(speed);			
+				sign_2.update(speed);
+			} 
 
 			if (platform_1.on){
 				platform_1.update(speed);
-
+				sign_1.update(speed);
 				
 				if(first_platforms[first_platforms.length-1] && first_platforms[first_platforms.length-1].x + 70 < player.x){ 
 					p_collission = true;	
@@ -688,6 +711,8 @@ function animate(){
 					
 					platform_1 = new Platform(last_y, platforms);
 					generateObstacles(platform_1.segments[Math.floor(platform_1.segments.length/2)].position.x, platform_1.height);
+					sign_1 = generateInstruction(platform_1.segments[Math.floor(platform_1.segments.length/2)].position.x);
+					num_signs += 1;
 					last_y = platform_1.height;
 					distance_from_last = -(platform_1.width*120);
 
@@ -698,6 +723,8 @@ function animate(){
 					
 					platform_2 = new Platform(last_y, platforms);
 					generateObstacles(platform_2.segments[Math.floor(platform_2.segments.length/2)].position.x, platform_2.height);
+					sign_2 = generateInstruction(platform_2.segments[Math.floor(platform_2.segments.length/2)].position.x);
+					num_signs += 1;
 					last_y = platform_2.height;			
 					distance_from_last = -(platform_2.width*120);
 
