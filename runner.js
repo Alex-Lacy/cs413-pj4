@@ -321,11 +321,11 @@ function updateTimer(){
 }
 
 
-setInterval(updateTimer, 1000);
+var intervel = setInterval(updateTimer, 1000);
 
 
 function reset(){
-
+	intervel = setInterval(updateTimer, 1000);
 
 	for(var i = 0; i < stage.children.length; i++){
 		stage.removeChildAt(i);
@@ -721,6 +721,7 @@ function die() {
 	game_view.visible = true;
 	player.visible = false;
 	dead = true;
+	clearInterval(intervel);
 }
 
 
