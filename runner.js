@@ -35,6 +35,8 @@ stage.addChild(death_view);
 var tutorial = new PIXI.Container();
 stage.addChild(tutorial);
 
+tutorial.visible = true;
+
 death_view.visible = false;
 death_view.interactive = false;
 
@@ -277,6 +279,11 @@ function reset(){
 	death_view = new PIXI.Container();
 	stage.addChild(death_view);
 
+	var tutorial = new PIXI.Container();
+	stage.addChild(tutorial);
+
+	tutorial.visible = true;
+
 	death_view.visible = false;
 	death_view.interactive = false;
 
@@ -305,6 +312,8 @@ function reset(){
 	dead = false // variable for death sound
 	
 	fall_speed = 5;
+
+	rightmost_index = 8;
 
 	game_on = false;
 
