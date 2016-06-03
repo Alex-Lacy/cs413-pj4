@@ -194,7 +194,7 @@ function loadGame(){
 	player.anchor.x = .5;
 	player.anchor.y = 1;
 	player.position.x = 120;
-	player.position.y = 400;
+	player.position.y = 430;
 	player.play();
 
 
