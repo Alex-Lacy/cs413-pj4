@@ -71,10 +71,15 @@ var score = 0;
 var platform_texture;
 
 
-var distance_from_last = -50;
+var distance_from_last = -200
+;
 var platform_distance = 200;
 
 var last_y = 475;
+
+var dead = false;
+
+var first_positioning = true;
 
 var platform_1 = {};
 var platform_2 = {};
@@ -85,7 +90,6 @@ var laser_death_sound;
 var game_theme;
 var jump_sound;
 
-var rightmost_index = 8;
 player.runningFrames;
 //player.runner;
 
@@ -258,7 +262,7 @@ window.addEventListener('keydown', function(e){
 function reset(){
 
 
-	for(var i = 0; i < stage.children.length-1; i++){
+	for(var i = 0; i < stage.children.length; i++){
 		stage.removeChildAt(i);
 	}
 
@@ -313,9 +317,9 @@ function reset(){
 	
 	fall_speed = 5;
 
-	rightmost_index = 8;
-
 	game_on = false;
+
+	dead = false;
 
 	p_collission = false; // collision for platforms
 
@@ -323,8 +327,11 @@ function reset(){
 
 	score = 0;
 
-	distance_from_last = -50;
+	distance_from_last = -200
 	last_y = 475;
+
+	first_positioning = true;
+
 
 	platform_1 = {};
 	platform_2 = {};
@@ -387,7 +394,7 @@ function fall(){
 // returns TRUE if the player is off screen
 // returns FALSE if the player is still on the screen
 
-var dead = false;
+
 
 function offScreen(){
 	if(player.y - 120 > 500){
@@ -524,40 +531,40 @@ function checkCollison() {
 
 
 
+
 function firstRun(){
 
 		
 		if(!(game_on)) return;
 
-		//first_platforms[first_platforms.length-1].visible = false;
-		for(var m = 0; m < first_platforms.length-1; m++){
+			if(first_positioning){
+				for(var k = 0; k <= game_width + 240; k += 120){
+					first_platforms[k / 120].position.x = k;
+					first_positioning = false;
+				}
+			}
 
+
+		//first_platforms[first_platforms.length-1].visible = false;
+		for(var m = 0; m < first_platforms.length; m++){
 
 			first_platforms[m].position.x -= speed;
 
-
-			if(first_platforms[m].position.x <= -120){
-				platforms.removeChild(first_platforms[m]);
-				first_platforms.splice(m, 1);
-				rightmost_index -= 1;
-				console.log(rightmost_index);
-
-			}
 		}
 
-
-
+		if(first_platforms[first_platforms.length-1].position.x <= -120){
+				platforms.removeChildren(0,9);
 			
+			first_platforms = [];		
 
-		if (first_platforms.length == 0){
 			first_run = false;
 
 		}
 
+
 		else{
 			requestAnimationFrame(firstRun);
 		}
-
 
 			
 }
@@ -581,21 +588,27 @@ function animate(){
 
 	requestAnimationFrame(animate);
 	scroller.update();
-	console.log(rightmost_index);
+	//console.log(rightmost_index);
 		if(game_on){
+
+			
+
 			if (platform_1.on || platform_2.on) moveObstacles(speed);
 
 			if (platform_2.on) platform_2.update(speed);
 
 			if (platform_1.on){
 				platform_1.update(speed);
-
 				
-				if(first_platforms[rightmost_index].x < player.x){ // the first platform has been created and passed where the play is
-					p_collission = true;
+
+		
+				if(first_platforms[first_platforms.length-1] && first_platforms[first_platforms.length-1].x + 70 < player.x){ 
+					p_collission = true;	
 				}
+			
 			}
-				// the initial creation of segments that were not an actual platform object have been removed from the screen
+
+
 			
 			collisionPlatform();
 
@@ -627,18 +640,19 @@ function animate(){
 			//platform_distance += speed;
 
 			speed += .001;
-			score += 100 * speed;
-			player.animationSpeed += speed/100000;
+			score += speed * 1.5;
+			
 	}
 
 	else{
 
-		for(var k = 0; k < platforms.children.length-1; k++){
+		for(var k = 0; k < platforms.children.length; k++){
 		 
 		 		platforms.children[k].position.x -= speed;
 		 		
 		 		if (platforms.children[k].position.x == -120){
 		 			platforms.children[k].position.x = game_width + 120;
+		 			
 		 		}
 		 	}
 	}
